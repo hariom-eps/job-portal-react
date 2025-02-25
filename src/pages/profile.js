@@ -23,9 +23,9 @@ export default function Profile() {
         <div className="container">
           <div className="row">
             <div className="col-md-6 offset-md-3">
-              <p className="heading-para">Profile</p>
+              <p className="heading-para">Profile</p>// profile
               <div className="profile-image-div">
-                <div className="inner-div">
+                <div className="inner-div second">
                   <img
                     id="profile-img"
                     src="http://ls.bizbybot.com/front/images/icons/default-profile-user-icon.svg"
