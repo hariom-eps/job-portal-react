@@ -5,6 +5,10 @@
   import { Link } from "react-router-dom";
   import "../css/style.css";
   import axios from "axios";
+  import OwlCarousel from 'react-owl-carousel3';
+  import 'owl.carousel/dist/assets/owl.carousel.css';
+  import 'owl.carousel/dist/assets/owl.theme.default.css';
+
 
   import Signup from "../components/signup";
   import Footer from "../components/footer";
@@ -65,6 +69,7 @@
       setFilteredJobs(filteredResults);
       setShowFilteredJobs(true);
     };
+    
     
     const handleClearFilters = () => {
       setFilters({ keyword: "", jobType: "", location: "" }); // Clear 
@@ -221,171 +226,146 @@
         </section>
 
         <section className="card-carousel-main-section">
-        {!showFilteredJobs && (
-        <div className="container position-relative">
-          <p className="common-slider-heading">Latest Jobs ({joblength})</p>   
-            <div>
-              {joblength > 0 ? (
-                <div className="slider owl-carousel owl-loaded owl-drag">
-                  <div className="owl-stage-outer">
-                    <div className="owl-stage" style={{ transform: "translate3d(0px, 0px, 0px)", transition: "all", width: "638px",}}>
+          {!showFilteredJobs && (
+            <div className="container position-relative">
+              <p className="common-slider-heading">Latest Jobs ({joblength})</p>
+              <div>
+                {jobs.length > 0 ? (
+                  <OwlCarousel className="slider owl-theme" loop={false} margin={20} dots={false} navText={['‹', '›']} nav responsive={{
+                    0: {
+                      items: 1, // Display 1 item on small screens
+                      margin: 20,
+                    },
+                    768: {
+                      items: 2, // Display 2 items on medium screens
+                      margin: 20,
+                    },
+                    1200: {
+                      items: 4, // Display 3 items on large screens
+                      margin: 20,
+                    },
+                  }}>
                     {jobs.map((job) => (
-                      <div key={job.id} className="owl-item active" style={{ width: "298.667px", marginRight: "20px" }}>
-
-                        <div className="each-job-card">
-                          <h3>
-                            <a href="http://ls.bizbybot.com/jobs/MTAw">
-                            {job.title}
-                            </a>
-                          </h3>
-                          <ul>
-                            <li>
-                              <img
-                                src="http://ls.bizbybot.com/front/images/icons/company.svg"
-                                className="img-fluid"
-                                alt="Company Name"
-                              />
-                              {job.company_info?.name}
-                            </li>
-                            <li>
-                              <img
-                                src="http://ls.bizbybot.com/front/images/icons/time-period.svg"
-                                className="img-fluid"
-                                alt="Year"
-                              />
-                              {`${job.experience_min}-${job.experience_max} Years`}
-                            </li>
-                            <li>
-                              <img
-                                src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg"
-                                className="img-fluid"
-                                alt="Sale"
-                              />
-                              {`${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()} ${job.salary_currency} per year`}
-
-                            </li>
-                            <li>
-                              <img
-                                src="http://ls.bizbybot.com/front/images/icons/job-type.svg"
-                                className="img-fluid"
-                                alt="Job Type"
-                              />
-                              {job.job_types}
-                            </li>
-                            <li>
-                              <img
-                                src="http://ls.bizbybot.com/front/images/icons/location.svg"
-                                className="img-fluid"
-                                alt="Location"
-                              />
-                              {job.location}
-                            </li>
-                          </ul>
-
-                          <div className="job-type-apply-main-div">
-                            <p className="job-type-label">{job.job_types}</p>
-                            <Link to={`/jobs/${job.id}`}
-                              className="apply-now-btn">
-                              APPLY NOW
-                            </Link>
-                          </div>
-                        </div>
-                      </div>))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="no-result-area">
-                  <h3>There are no Latest Jobs to be displayed here.</h3>
-                </div>
-              )}
-            </div>       
-        </div>)}
-        {showFilteredJobs && (
-        <div className="container position-relative">
-          <p className="common-slider-heading">
-          <span class="d-flex align-items-center gap-3">Search Results
-            <span class="clear-search" onClick={handleClearFilters}> Clear ×</span>
-          </span>
-          </p> 
-          <div>
-          {filteredJobs.length > 0 ? ( 
-              <div className="slider owl-carousel owl-loaded owl-drag">
-                <div className="owl-stage-outer">
-                  <div className="owl-stage" style={{ transform: "translate3d(0px, 0px, 0px)", transition: "all", width: "638px",}}>
-                  {filteredJobs.map((job) => (
-                    <div key={job.id} className="owl-item active" style={{ width: "298.667px", marginRight: "20px" }}>
-
-                      <div className="each-job-card">
+                      <div key={job.id} className="each-job-card">
                         <h3>
-                          <a href="http://ls.bizbybot.com/jobs/MTAw">
-                          {job.title}
-                          </a>
+                          <a href={`http://ls.bizbybot.com/jobs/${job.id}`}>{job.title}</a>
                         </h3>
                         <ul>
                           <li>
-                            <img
-                              src="http://ls.bizbybot.com/front/images/icons/company.svg"
-                              className="img-fluid"
-                              alt="Company Name"
-                            />
-                            {job.company_info?.name}
+                            <img src="http://ls.bizbybot.com/front/images/icons/company.svg" className="img-fluid" alt="Company Name" />
+                            {job.company_info?.name || "N/A"}
                           </li>
                           <li>
-                            <img
-                              src="http://ls.bizbybot.com/front/images/icons/time-period.svg"
-                              className="img-fluid"
-                              alt="Year"
-                            />
-                            {`${job.experience_min}-${job.experience_max} Years`}
+                            <img src="http://ls.bizbybot.com/front/images/icons/time-period.svg" className="img-fluid" alt="Year" />
+                            {job.experience_min && job.experience_max
+                              ? `${job.experience_min}-${job.experience_max} Years`
+                              : "Experience Not Specified"}
                           </li>
                           <li>
-                            <img
-                              src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg"
-                              className="img-fluid"
-                              alt="Sale"
-                            />
-                            {`${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()} ${job.salary_currency} per year`}
-
+                            <img src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg" className="img-fluid" alt="Sale" />
+                            {job.salary_min && job.salary_max
+                              ? `${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()} ${job.salary_currency} per year`
+                              : "Salary Not Specified"}
                           </li>
                           <li>
-                            <img
-                              src="http://ls.bizbybot.com/front/images/icons/job-type.svg"
-                              className="img-fluid"
-                              alt="Job Type"
-                            />
-                            {job.job_types}
+                            <img src="http://ls.bizbybot.com/front/images/icons/job-type.svg" className="img-fluid" alt="Job Type" />
+                            {job.job_types || "Not Specified"}
                           </li>
                           <li>
-                            <img
-                              src="http://ls.bizbybot.com/front/images/icons/location.svg"
-                              className="img-fluid"
-                              alt="Location"
-                            />
-                            {job.location}
+                            <img src="http://ls.bizbybot.com/front/images/icons/location.svg" className="img-fluid" alt="Location" />
+                            {job.location || "Not Specified"}
                           </li>
                         </ul>
-
                         <div className="job-type-apply-main-div">
                           <p className="job-type-label">{job.job_types}</p>
-                          <Link to={`/jobs/${job.id}`}
-                            className="apply-now-btn">
+                          <Link to={`/jobs/${job.id}`} className="apply-now-btn">
                             APPLY NOW
                           </Link>
                         </div>
                       </div>
-                    </div>))}
+                    ))}
+                  </OwlCarousel>
+                ) : (
+                  <div className="no-result-area">
+                    <h3>There are no Latest Jobs to be displayed here.</h3>
                   </div>
-                </div>
+                )}
               </div>
-            ) : (
-              <div className="no-result-area">
-                <h3>No job found for the searched criteria</h3>
-                <p>Please try with a different keyword, type or location</p>
+            </div>
+          )}
+
+          {showFilteredJobs && (
+            <div className="container position-relative">
+              <p className="common-slider-heading">
+                <span className="d-flex align-items-center gap-3">Search Results
+                  <span className="clear-search" onClick={handleClearFilters}> Clear ×</span>
+                </span>
+              </p>
+              <div>
+                {filteredJobs.length > 0 ? (
+                  <OwlCarousel className="slider owl-theme" loop={false} margin={20} dots={false} navText={['‹', '›']} nav responsive={{
+                    0: {
+                      items: 1, 
+                      margin: 20,
+                    },
+                    768: {
+                      items: 2,
+                      margin: 20,
+                    },
+                    1200: {
+                      items: 4, 
+                      margin: 20,
+                    },
+                  }}>
+                    {filteredJobs.map((job) => (
+                      <div key={job.id} className="each-job-card">
+                        <h3>
+                          <a href={`http://ls.bizbybot.com/jobs/${job.id}`}>{job.title}</a>
+                        </h3>
+                        <ul>
+                          <li>
+                            <img src="http://ls.bizbybot.com/front/images/icons/company.svg" className="img-fluid" alt="Company Name" />
+                            {job.company_info?.name || "N/A"}
+                          </li>
+                          <li>
+                            <img src="http://ls.bizbybot.com/front/images/icons/time-period.svg" className="img-fluid" alt="Year" />
+                            {job.experience_min && job.experience_max
+                              ? `${job.experience_min}-${job.experience_max} Years`
+                              : "Experience Not Specified"}
+                          </li>
+                          <li>
+                            <img src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg" className="img-fluid" alt="Sale" />
+                            {job.salary_min && job.salary_max
+                              ? `${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()} ${job.salary_currency} per year`
+                              : "Salary Not Specified"}
+                          </li>
+                          <li>
+                            <img src="http://ls.bizbybot.com/front/images/icons/job-type.svg" className="img-fluid" alt="Job Type" />
+                            {job.job_types || "Not Specified"}
+                          </li>
+                          <li>
+                            <img src="http://ls.bizbybot.com/front/images/icons/location.svg" className="img-fluid" alt="Location" />
+                            {job.location || "Not Specified"}
+                          </li>
+                        </ul>
+                        <div className="job-type-apply-main-div">
+                          <p className="job-type-label">{job.job_types}</p>
+                          <Link to={`/jobs/${job.id}`} className="apply-now-btn">
+                            APPLY NOW
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </OwlCarousel>
+                ) : (
+                  <div className="no-result-area">
+                    <h3>No job found for the searched criteria</h3>
+                    <p>Please try with a different keyword, type or location</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>)}
+            </div>
+          )}
         </section>
 
         <br />

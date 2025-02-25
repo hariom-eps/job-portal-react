@@ -49,27 +49,27 @@ export default function Profile() {
                   <p><strong>Phone Number:</strong><span style={{color: "#597698" }}> {user && user.data.phone_number ? user.phone_number : "n/a"}</span></p>
                 </div>
               </div> */}
-              <div class="profile-main-inputes-div">
-                <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert" id="alertEPDiv" style={{display: "none"}}>
+              <div className="profile-main-inputes-div">
+                <div className="alert alert-danger alert-dismissible fade show mt-2" role="alert" id="alertEPDiv" style={{display: "none"}}>
                     <strong id="alertEPMessage"></strong>
-                    <button type="button" class="btn-close" aria-label="Close" onclick="hideMessage('#alertEPDiv')"></button>
+                    <button type="button" className="btn-close" aria-label="Close" onClick="hideMessage('#alertEPDiv')"></button>
                 </div>
 
-                <div class="alert alert-success alert-dismissible fade show mt-2" role="alert" id="alertEPSuccessDiv" style={{display: "none"}}>
+                <div className="alert alert-success alert-dismissible fade show mt-2" role="alert" id="alertEPSuccessDiv" style={{display: "none"}}>
                     <strong id="alertEPSuccessMessage"></strong>
-                    <button type="button" class="btn-close" aria-label="Close" onclick="hideMessage('#alertEPSuccessDiv')"></button>
+                    <button type="button" className="btn-close" aria-label="Close" onClick="hideMessage('#alertEPSuccessDiv')"></button>
                 </div>
 
-                <div class="each-animatted-input-div">
+                <div className="each-animatted-input-div">
                     <input type="text" id="fname" name="first_name" placeholder={user ? user.data.first_name : 'n/a'} value=""/>
                 </div>
-                <div class="each-animatted-input-div">
+                <div className="each-animatted-input-div">
                     <input type="text" id="lname" name="last_name" placeholder={user && user.data.last_name ? user.last_name : 'Last Name (n/a)'} value=""/>
                 </div>
-                <div class="each-animatted-input-div">
+                <div className="each-animatted-input-div">
                     <input type="email" id="email" placeholder={user ? user.data.email : 'n/a'} value="" readonly/>
                 </div>
-                <div class="each-animatted-input-div">
+                <div className="each-animatted-input-div">
                     <input type="tel" id="contact_phone" name="phone_number" placeholder={user && user.data.phone_number ? user.phone_number : 'Phone number (n/a)'} value="" inputmode="text"/>
                 </div>
             </div>
