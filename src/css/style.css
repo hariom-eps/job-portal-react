@@ -1117,8 +1117,7 @@ img, svg {
     background: #597698;
     display: -webkit-box;
     display: -ms-flexbox;
-    display: flex
-;
+    display: flex;
     -webkit-box-pack: justify;
     -ms-flex-pack: justify;
     justify-content: space-between;
@@ -1130,34 +1129,12 @@ img, svg {
     flex-wrap: nowrap;
     margin-block: 25px 15px;
 }
+.course-tab-ul li {
+    width: 100%;
+}
 .course-tab-ul li button.active {
     background: #ffffff;
     color: #000000;
-}
-.course-tab-ul li button {
-    display: block;
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
-    outline: none;
-    border: none;
-    width: 100%;
-    border-radius: 50px;
-    background: transparent;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex
-;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    color: #ffffff;
-    text-align: center;
-    font-size: 16px;
-    font-weight: 500;
-    padding-block: 12.5px;
 }
 .course-tab-ul li button {
     display: block;

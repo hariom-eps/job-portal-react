@@ -72,10 +72,10 @@
     
     
     const handleClearFilters = () => {
-      setFilters({ keyword: "", jobType: "", location: "" }); // Clear 
-      setFilteredJobs([]); // filtered jobs
-      setSelectedJobType(""); //job type input
-      setShowFilteredJobs(false); //  jobs section
+      setFilters({ keyword: "", jobType: "", location: "" });
+      setFilteredJobs([]);
+      setSelectedJobType("");
+      setShowFilteredJobs(false);
     };
 
     // axios.get("http://ls.bizbybot.com/api/jobs", {
@@ -233,15 +233,15 @@
                 {jobs.length > 0 ? (
                   <OwlCarousel className="slider owl-theme" loop={false} margin={20} dots={false} navText={['‹', '›']} nav responsive={{
                     0: {
-                      items: 1, // Display 1 item on small screens
+                      items: 1,  
                       margin: 20,
                     },
                     768: {
-                      items: 2, // Display 2 items on medium screens
+                      items: 2,  
                       margin: 20,
                     },
                     1200: {
-                      items: 4, // Display 3 items on large screens
+                      items: 4, 
                       margin: 20,
                     },
                   }}>

@@ -5,7 +5,7 @@ import Footer from '../../components/footer';
 import Newsletter from '../../components/newsletter';
 import '../../css/style.css'
 import { toast } from 'react-hot-toast';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { useEffect , useState} from 'react';
 import axios from 'axios'
 import { InputMask } from '@react-input/mask';
@@ -54,15 +54,12 @@ export default function Applyjob() {
 
         const formDataToSend = new FormData();
 
-        formDataToSend.append('phone', formData.phone);
-        formDataToSend.append('address', formData.address);
-        formDataToSend.append('city', formData.city);
-        formDataToSend.append('state', formData.state);
-        formDataToSend.append('pincode', formData.pincode);
-        formDataToSend.append('file', formData.file);
-
-        formDataToSend.append('name', username);  
-        formDataToSend.append('email', email);   
+        Object.entries(formData).forEach(([key, value]) => {
+            formDataToSend.append(key, value);
+        });
+    
+        formDataToSend.append('name', username);
+        formDataToSend.append('email', email);
 
         axios.post(`http://ls.bizbybot.com/api/jobs/${jobID}/apply`, formDataToSend, {
             headers: {
@@ -79,34 +76,10 @@ export default function Applyjob() {
             console.log("Server Response:", response.data);
         })
         .catch(error => {
-            console.error("Error applying for job:", error);
+            toast.error(error.response?.data?.message || "An error occurred. Please try again.");
+        });
         
-            if (error.response) {
-                console.error("Error Response Data:", error.response.data);
-                console.error("Error Response Status:", error.response.status);
-                console.error("Error Response Headers:", error.response.headers);
-        
-                if (error.response.status === 400) {
-                    toast.error(error.response.data?.message || "Bad request. Please check your input.");
-                } else if (error.response.status === 401) {
-                    toast.error("Unauthorized. Please log in again.");
-                } else if (error.response.status === 403) {
-                    toast.error("Forbidden. You do not have permission to apply for this job.");
-                } else if (error.response.status === 404) {
-                    toast.error("Job not found. It may have been removed.");
-                } else if (error.response.status === 500) {
-                    toast.error("Server error. Please try again later.");
-                } else {
-                    toast.error(`Unexpected error: ${error.response.status} - ${error.response.statusText}`);
-                }
-            } else if (error.request) {
-                console.error("No response received:", error.request);
-                toast.error("No response from the server. Please check your internet connection.");
-            } else {
-                console.error("Request setup error:", error.message);
-                toast.error("Something went wrong. Please try again.");
-            }
-        });}
+    }
 
     
   return (
@@ -130,9 +103,9 @@ export default function Applyjob() {
                     <div className="common-description-area-start">
                         <p className="my-pro-applied-for-heading">
                             You are applying for
-                            <a href="javascript:void(0)">
+                            <Link to={`/jobs/${jobID}`}>
                                 {jobs?.title}
-                            </a>
+                            </Link>
                         </p>
                         <div className="all-details">
                             <span><img src="http://ls.bizbybot.com/front/images/icons/company.svg" alt="company"/>{jobs?.company?.name}</span>
@@ -148,17 +121,16 @@ export default function Applyjob() {
                     <form method="post" enctype="multipart/form-data" onSubmit={applyForJob}>
                         <p className="sub-heading-para">Tell us about yourself</p>
                         <div className="pe-0 pe-lg-5 me-0 me-lg-5">
-
                             <div className="row">
                                 <div className="col-md-6">
                                     <div className="each-animatted-input-div">
-                                        <input type="text" name="name" value={username} id="fname" required="" placeholder='Name' fdprocessedid="pq9xx"/>
+                                        <input type="text" name="name" value={username} id="fname" required="" placeholder='Name' />
                                         <span className="text-danger error-text" id="name-error"></span>
                                     </div>
                                 </div>
                                 <div className="col-md-6">
                                     <div className="each-animatted-input-div">
-                                        <input type="email" name="email" value={email} id="email" required="" placeholder='Email Address' fdprocessedid="7albnj"/>
+                                        <input type="email" name="email" value={email} id="email" required="" placeholder='Email Address'/>
                                         <span className="text-danger error-text" id="email-error"></span>
                                     </div>
                                 </div>
@@ -166,7 +138,7 @@ export default function Applyjob() {
                                     <div className="each-animatted-input-div">
                                         <InputMask  type="tel" name="phone" value={formData.phone} 
                                         mask="(___)-(___)-____" replacement={{ _: /\d/ }} 
-                                        id="contact_phone" onChange={handleChange} required="" inputmode="text" placeholder='Phone Number' fdprocessedid="qs4yt"/>
+                                        id="contact_phone" onChange={handleChange} required="" inputmode="text" placeholder='Phone Number' />
                                         <span className="text-danger error-text" id="phone-error"></span>
                                     </div>
                                 </div>
@@ -208,20 +180,14 @@ export default function Applyjob() {
                             <p className="suggetion">(*Allowed file extensions are docx, doc, pdf)</p>
                             <span className="text-danger error-text" id="file-error"></span>
                         </div>
-
-                        <button className="btn submit-application-btn" fdprocessedid="oh2ocf">SUBMIT THE APPLICATION</button>
+                        <button className="btn submit-application-btn">SUBMIT THE APPLICATION</button>
                     </form>
-
                 </div>
-
-                
             </div>
         </div>
     </section>
-
     <Newsletter/>
     <Footer/>
-      
     </div>
   )
 }

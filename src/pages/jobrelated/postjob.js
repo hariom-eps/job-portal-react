@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useRef } from "react";
 import "../../css/style.css";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -12,6 +12,7 @@ import Navbar from "../../components/navbar";
 import Newsletter from "../../components/newsletter";
 import Footer from "../../components/footer";
 import Jobheader from "../../components/jobheader";
+import { apiUrl } from "../../helper";
 
 export default function Postjob() {
   const [industryTypes, setIndustryTypes] = useState([]);
@@ -20,6 +21,14 @@ export default function Postjob() {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [workplacetypes, setWorkplaceTypes] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  // Company 
+  const [activeTab, setActiveTab] = useState("existing");
+  const [companyData, setCompanyData] = useState(null);
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+  // Error
+  const [errors, setErrors] = useState({});
+  // Form 
   const [formData, setFormData] = useState({
     title: "",
     location: "",
@@ -81,7 +90,20 @@ export default function Postjob() {
   };
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    let newErrors = { ...errors };
+    if (name === "title") {
+        if (!value.trim()) {
+            newErrors.title = "Job Title is required.";
+        } else {
+            newErrors.title = "";
+        }
+    }
+    setErrors(newErrors);
   };
+  
 
   useEffect(() => {
     axios
@@ -134,6 +156,20 @@ export default function Postjob() {
         setWorkplaceTypes([]);
         toast.error("Error fetching workplace types.");
       });
+
+      axios.get(`${apiUrl}/api/company`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` }
+    })
+        .then((response) => {
+            const companyData = response.data.data;
+            setCompanies(companyData);
+            console.log("Company Data:", companyData);
+        })
+        .catch((error) => {
+            console.error("Error fetching company data:", error);
+            toast.error("Error fetching company data");
+        });
+      
     $("#jobDescriptionEditor").summernote({
       placeholder: "Type job description here...",
       tabsize: 2,
@@ -156,17 +192,65 @@ export default function Postjob() {
     };
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const description = $("#jobDescriptionEditor").summernote("code");
-    const qualifications = $("#jobQualificationEditor").summernote("code");
-    const companyAbout = $("#aboutCompanyEditor").summernote("code");
-    const postData = {
-      ...formData,
-      description: description,
-      qualifications: qualifications,
-      company_about: companyAbout,
-    };
+  const handleCompanySelect = (companyId) => {
+    setSelectedCompanyId(companyId); 
+    setFormData(prev => ({
+        ...prev,
+        company_id: companyId,
+        name: companies.find(company => company.id === companyId)?.name || "",
+        website: companies.find(company => company.id === companyId)?.website || "",
+    }));
+};
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+  let newErrors = {};
+
+    if (!formData.title.trim()) {
+        newErrors.title = "Job Title is required.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return; 
+    }
+
+  const description = $("#jobDescriptionEditor").summernote("code");
+  const qualifications = $("#jobQualificationEditor").summernote("code");
+  const companyAbout = $("#aboutCompanyEditor").summernote("code");
+
+  const postData = {
+    ...formData,
+    description: description,
+    qualifications: qualifications,
+    company_about: companyAbout,
+  };
+
+  if (activeTab === "existing") {
+    if (!selectedCompanyId) {
+      toast.error("Please select a company.");
+      return;
+    }
+
+    axios
+      .post(
+        "http://ls.bizbybot.com/api/jobs",
+        { ...postData, company_id: selectedCompanyId },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` } }
+      )
+      .then((jobResponse) => {
+        toast.success("Job posted successfully!");
+        console.log("Job posted:", jobResponse.data);
+      })
+      .catch((error) => {
+        if (error.response) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("An error occurred.");
+        }
+      });
+
+  } else {
     const companyData = {
       name: formData.name,
       website: formData.website,
@@ -188,27 +272,17 @@ export default function Postjob() {
       })
       .then((companyResponse) => {
         const companyId = companyResponse.data.data.id;
-        console.log("Company posted:", companyResponse.data);
-        console.log("Company ID:", companyId);
+        console.log("Company created:", companyResponse.data);
+
         axios
           .post(
             "http://ls.bizbybot.com/api/jobs",
             { ...postData, company_id: companyId },
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("Token")}`,
-              },
-            }
+            { headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` } }
           )
           .then((jobResponse) => {
             toast.success("Job posted successfully!");
             console.log("Job posted:", jobResponse.data);
-            if (jobResponse.data.company_id) {
-              console.log(
-                "Company ID from Job response:",
-                jobResponse.data.company_id
-              );
-            }
           })
           .catch((error) => {
             if (error.response) {
@@ -222,30 +296,20 @@ export default function Postjob() {
         if (
           error.response &&
           error.response.data.message === "Company already exists." &&
-          error.response.data.data &&
-          error.response.data.data.id
+          error.response.data.data?.id
         ) {
           const companyId = error.response.data.data.id;
           console.log("Company already exists, using existing ID:", companyId);
+
           axios
             .post(
               "http://ls.bizbybot.com/api/jobs",
               { ...postData, company_id: companyId },
-              {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem("Token")}`,
-                },
-              }
+              { headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` } }
             )
             .then((jobResponse) => {
               toast.success("Job posted successfully!");
               console.log("Job posted:", jobResponse.data);
-              if (jobResponse.data.company_id) {
-                console.log(
-                  "Company ID from Job response:",
-                  jobResponse.data.company_id
-                );
-              }
             })
             .catch((error) => {
               if (error.response) {
@@ -255,14 +319,12 @@ export default function Postjob() {
               }
             });
         } else {
-          if (error.response) {
-            toast.error(error.response.data.message);
-          } else {
-            toast.error("An error occurred.");
-          }
+          toast.error(error.response?.data?.message || "An error occurred.");
         }
       });
-  };
+  }
+};
+
 
   return (
     <div>
@@ -281,8 +343,7 @@ export default function Postjob() {
                 type="hidden"
                 name="_token"
                 value="oSgdsqeiGv9Zh9WiLpGxwrLa3I7myzsUYBPrIpGi"
-                autoComplete="off"
-              />
+                autoComplete="off"/>
               <p className="post-pages-heading">Job Information</p>
               <div className="row pe-lg-5">
                 <div className="col-md-6 mt-4">
@@ -293,12 +354,11 @@ export default function Postjob() {
                       name="title"
                       placeholder="Job Title"
                       value={formData.title}
-                      onChange={handleChange}
-                    />
+                      onChange={handleChange}/>
                     <span
                       className="text-danger error-text"
                       id="title-error"
-                    ></span>
+                    >{errors.title}</span>
                   </div>
                 </div>
 
@@ -311,8 +371,7 @@ export default function Postjob() {
                       placeholder="Job Location"
                       value={formData.location || ""}  
                       onChange={handleChange} 
-                      fdprocessedid="lbmxpr"
-                    />
+                      fdprocessedid="lbmxpr"/>
                     <span
                       className="text-danger error-text"
                       id="location-error"
@@ -352,13 +411,11 @@ export default function Postjob() {
                                 (type) => type.id === formData.job_category
                               )?.name || ""
                             : ""
-                        }
-                      />
+                        }/>
                       <i>
                         <img
                           src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"
-                        />
+                          alt="Chevron"/>
                       </i>
                     </div>
                     {activeDropdown === "jobCategory" && (
@@ -404,13 +461,11 @@ export default function Postjob() {
                         className="sBtn-text"
                         placeholder="Job Skill"
                         readOnly
-                        value={formData.skills.join(", ")}
-                      />
+                        value={formData.skills.join(", ")}/>
                       <i>
                         <img
                           src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"
-                        />
+                          alt="Chevron"/>
                       </i>
                     </div>
                     {activeDropdown === "jobSkill" && (
@@ -470,13 +525,11 @@ export default function Postjob() {
                         id="industryTypeInput"
                         placeholder="Industry Type"
                         readOnly
-                        value={formData.industry_types.join(", ")}
-                      />
+                        value={formData.industry_types.join(", ")}/>
                       <i>
                         <img
                           src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"
-                        />
+                          alt="Chevron"/>
                       </i>
                     </div>
                     <ul className="options py-0">
@@ -534,13 +587,11 @@ export default function Postjob() {
                         id="selectJobType"
                         placeholder="Select Job Type"
                         readOnly
-                        value={formData.job_types.join(", ")}
-                      />
+                        value={formData.job_types.join(", ")}/>
                       <i>
                         <img
                           src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"
-                        />
+                          alt="Chevron"/>
                       </i>
                     </div>
                     {activeDropdown === "jobType" && (
@@ -600,13 +651,11 @@ export default function Postjob() {
                         id="workPlaceTypeInput"
                         placeholder="Workplace Type"
                         readOnly
-                        value={formData.workplace_types.join(", ")}
-                      />
+                        value={formData.workplace_types.join(", ")}/>
                       <i>
                         <img
                           src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"
-                        />
+                          alt="Chevron"/>
                       </i>
                     </div>
                     {activeDropdown === "workplaceType" && (
@@ -661,8 +710,7 @@ export default function Postjob() {
                           placeholder="Min"
                           value={formData.experience_min || ""}
                           onChange={handleChange}
-                          fdprocessedid="ps88vrb"
-                        />
+                          fdprocessedid="ps88vrb"/>
                         <span
                           className="text-danger error-text"
                           id="experience_min-error"
@@ -681,8 +729,7 @@ export default function Postjob() {
                           placeholder="Max"
                           value={formData.experience_max || ""}
                           onChange={handleChange}
-                          fdprocessedid="2wzeo9"
-                        />
+                          fdprocessedid="2wzeo9"/>
                         <span
                           className="text-danger error-text"
                           id="experience_max-error"
@@ -712,13 +759,11 @@ export default function Postjob() {
                         id="selectCurrency"
                         placeholder="Select Currency"
                         readOnly
-                        value={formData.salary_currency || ""}
-                      />
+                        value={formData.salary_currency || ""}/>
                       <i>
                         <img
                           src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"
-                        />
+                          alt="Chevron"/>
                       </i>
                     </div>
                     {activeDropdown === "salaryCurrency" && (
@@ -769,8 +814,7 @@ export default function Postjob() {
                       placeholder="Min"
                       value={formData.salary_min || ""}
                       onChange={handleChange}
-                      fdprocessedid="l0tkc8"
-                    />
+                      fdprocessedid="l0tkc8"/>
                     <span
                       className="text-danger error-text"
                       id="salary_min-error"
@@ -794,8 +838,7 @@ export default function Postjob() {
                       placeholder="Max"
                       value={formData.salary_max || ""}
                       onChange={handleChange}
-                      fdprocessedid="80dvyl"
-                    />
+                      fdprocessedid="80dvyl"/>
                     <span
                       className="text-danger error-text"
                       id="salary_max-error"
@@ -809,91 +852,51 @@ export default function Postjob() {
                 </div>
               </div>
               <p className="post-pages-heading">Company Information</p>
+
               <div className="row">
+                <div class="col-12">
+                  <ul class="nav course-tab-ul existing-add-company-ul" id="myTab" role="tablist">
+                      <li class="nav-item" role="presentation">
+                          <button type="button" className={`create-new-existing ${activeTab === "existing" ? "active" : ""}`} id="existing-tab"
+                          onClick={() => setActiveTab("existing")}>Select existing company</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                          <button type="button" className={`create-new-existing ${activeTab === "new" ? "active" : ""}`} id="video-tab"
+                          onClick={() => setActiveTab("new")}>Add new company</button>
+                      </li>
+                  </ul>
+                </div>
                 <div className="col-12">
                   <div className="tab-content" id="myTabContent">
-                    <div className="tab-pane fade" id="existingCompany">
+                    {/* Existing Company  */}
+                    <div className={`tab-pane fade ${activeTab === "existing" ? "active show" : ""}`} id="existingCompany">
                       <div className="col-md-6 mt-4">
-                        <label
-                          htmlFor="existingCompanyInp"
-                          className="formlabel"
-                        >
-                          Existing company
-                        </label>
-                        <div className="select-menu options-main-div">
-                          <div className="select-btn">
-                            <input
-                              hidden
-                              id="existing_company_id"
-                              className="input-class"
-                              name="company_id"
-                            />
-                            <input
-                              id="existingCompanyInp"
-                              type="text"
-                              className="sBtn-text input-class"
-                              placeholder="Select existing company"
-                              readOnly
-                            />
-                            <i>
-                              <img
-                                src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                                alt="Chevron"
-                              />
-                            </i>
+                          <label htmlFor="existingCompanyInp" className="formlabel">
+                              Existing company
+                          </label>
+                          <div className={`select-menu options-main-div ${activeDropdown === "existingCompany" ? "active" : ""}`}>
+                              <div className="select-btn" onClick={() => handleDropdownClick("existingCompany")}>
+                                  <input hidden id="existing_company_id" className="input-class" name="company_id" value={selectedCompanyId || ""} />
+                                  <input id="existingCompanyInp" type="text" className="sBtn-text input-class" placeholder="Select existing company" readOnly value={companies.find(company => company.id === selectedCompanyId)?.name || ""} />
+                                  <i><img src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg" alt="Chevron" /></i>
+                              </div>
+                              {activeDropdown === "existingCompany" && (
+                                  <ul className="options py-0">
+                                      {companies.map((company) => (
+                                          <li key={company.id} className="option select-existing-company-dropdown-options" onClick={() => {
+                                              handleCompanySelect(company.id);
+                                              setActiveDropdown(null);
+                                          }}>
+                                              <span className="option-text">{company.name}</span>
+                                          </li>
+                                      ))}
+                                  </ul>
+                              )}
                           </div>
-                          <ul className="options py-0">
-                            <li className="select-search-inp-li">
-                              <input
-                                type="text"
-                                placeholder="Type to search"
-                                className="filter-input"
-                              />
-                            </li>
-                            <li
-                              className="option select-existing-company-dropdown-options"
-                              value="50"
-                            >
-                              <span className="option-text">Webslinger</span>
-                            </li>
-                            <li className="d-none no-result-li">
-                              <img
-                                src="http://ls.bizbybot.com/front/images/icons/sad-icon.svg"
-                                alt="Sad"
-                              />
-                              No search results!
-                            </li>
-                          </ul>
-                        </div>
-                        <span
-                          className="text-danger error-text"
-                          id="company_id-error"
-                        ></span>
                       </div>
-                      <div
-                        id="existing-company-div"
-                        className="common-description-area-start mt-4"
-                      >
-                        <p
-                          className="long-short-para"
-                          id="company-about_company"
-                        ></p>
-                        <div className="job-details-list"></div>
-                        <div
-                          id="existing-company-photo"
-                          style={{ display: "none" }}
-                        >
-                          <p className="post-pages-heading mt-4">
-                            Company Photos
-                          </p>
-                          <div
-                            className="uploaded-all-images-div"
-                            id="uploaded-all-images-div-old"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="tab-pane fade active show" id="newCompany">
+                  </div>
+                    {/* New Company  */}
+                    <div className={`tab-pane fade ${activeTab === "new" ? "active show" : ""}`} id="newCompany">
                       <div className="row pe-lg-5">
                         <div className="col-md-6 mt-4">
                           <div className="each-animatted-input-div mt-0">
@@ -902,8 +905,8 @@ export default function Postjob() {
                               id="companyName"
                               name="name"
                               placeholder="Company Name"
-                              onChange={handleChange}
-                            />
+                              value={formData.name || ""}
+                              onChange={handleChange}/>
                             <span
                               className="text-danger error-text"
                               id="name-error"
@@ -918,8 +921,8 @@ export default function Postjob() {
                               id="companyWebsite"
                               name="website"
                               placeholder="Company Website"
-                              onChange={handleChange}
-                            />
+                              value={formData.website || ""}
+                              onChange={handleChange}/>
                             <span
                               className="text-danger error-text"
                               id="website-error"
@@ -937,8 +940,7 @@ export default function Postjob() {
                               id="contactPersonName"
                               name="contact_person"
                               placeholder="Contact Person Name"
-                              onChange={handleChange}
-                            />
+                              onChange={handleChange}/>
                             <span
                               className="text-danger error-text"
                               id="contact_person-error"
@@ -952,8 +954,7 @@ export default function Postjob() {
                               id="contactEmail"
                               name="contact_email"
                               placeholder="Contact Email"
-                              onChange={handleChange}
-                            />
+                              onChange={handleChange}/>
                             <span
                               className="text-danger error-text"
                               id="contact_email-error"
@@ -972,8 +973,7 @@ export default function Postjob() {
                               inputMode="text"
                               placeholder=" Contact Phone No."
                               fdprocessedid="qs4yt"
-                              onChange={handleChange}
-                            />
+                              onChange={handleChange}/>
                             <span
                               className="text-danger error-text"
                               id="contact_phone-error"
@@ -987,8 +987,7 @@ export default function Postjob() {
                               id="address"
                               name="address_line_1"
                               placeholder="Address"
-                              onChange={handleChange}
-                            />
+                              onChange={handleChange}/>
                             <span
                               className="text-danger error-text"
                               id="address_line_1-error"
@@ -1005,8 +1004,7 @@ export default function Postjob() {
                               id="city"
                               name="city"
                               placeholder="City"
-                              onChange={handleChange}
-                            />
+                              onChange={handleChange}/>
                             <span
                               className="text-danger error-text"
                               id="city-error"
@@ -1033,13 +1031,11 @@ export default function Postjob() {
                                 id="country"
                                 placeholder="Country"
                                 readOnly
-                                value={formData.country || ""}
-                              />
+                                value={formData.country || ""}/>
                               <i>
                                 <img
                                   src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                                  alt="Chevron"
-                                />
+                                  alt="Chevron"/>
                               </i>
                             </div>
                             {activeDropdown === "country" && (
@@ -1087,8 +1083,7 @@ export default function Postjob() {
                               id="zip"
                               name="pincode"
                               placeholder="Postcode"
-                              onChange={handleChange}
-                            />
+                              onChange={handleChange}/>
                             <span
                               className="text-danger error-text"
                               id="pincode-error"
@@ -1100,12 +1095,8 @@ export default function Postjob() {
                   </div>
                 </div>
               </div>
-              <button
-                className="btn submit-application-btn"
-                fdprocessedid="0n2rr6"
-              >
-                POST THE JOB NOW
-              </button>
+
+              <button className="btn submit-application-btn"> POST THE JOB NOW</button>
             </form>
           </div>
         </div>

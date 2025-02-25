@@ -70,7 +70,7 @@ const handleDeleteJob = () => {
       })
       .catch((error) => {
         console.error("Error deleting job (axios error):", error);
-        toast.error("Error deleting job: Network or server error.");
+        toast.error("Error deleting job: Network or server error.",error);
         setJobIdToDelete(null);
       });
   }
@@ -151,12 +151,12 @@ const handleDeleteJob = () => {
 
       {/* Delete model  */}
       <div className={`modal fade delete-modal-main-div fadeit ${jobIdToDelete ? 'show blurred-background transition-modal' : ''}`} 
-      id="deleteModal" tabIndex="-1" aria-labelledby="deleteModalLabel" aria-modal="true" role="dialog" 
+      id="deleteModal"
       style={{ transition: 'transform 0.3s ease-in-out', display: jobIdToDelete ? 'block' : 'none' }}>
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content rounded-0">
             <div className="modal-body">
-              <button className="modal-close-btn" onClick={() => setJobIdToDelete(null)} aria-label="Close">
+              <button className="modal-close-btn" onClick={() => setJobIdToDelete(null)}>
                 <img src="http://ls.bizbybot.com/front/images/icons/modal-close.svg" alt="Close" />
               </button>
 
@@ -165,7 +165,7 @@ const handleDeleteJob = () => {
                 <p className="sub-heading">Are you sure you want to delete this job?</p>
                 <p className="sub-heading">If you delete this job, job associated data will be deleted permanently?</p>
                 <div className="delete-modal-cancel-del-btns">
-                  <button className="btn cancel-btn" onClick={() => setJobIdToDelete(null)} aria-label="Close">Cancel</button>
+                  <button className="btn cancel-btn" onClick={() => setJobIdToDelete(null)}>Cancel</button>
                   <button className="btn delete-btn" onClick={handleDeleteJob}>Delete</button>
                 </div>
               </div>

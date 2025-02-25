@@ -36,25 +36,25 @@ export default function Forgotpasswordpage() {
                     
 
                     <form className="auth-main-inputes-div" onSubmit={handleSubmit}>
-                        <input type="hidden" name="_token" value=" " autocomplete="off"/>                    
+                        <input type="hidden" name="_token" autocomplete="off"/>                    
                         <p className="main-heading">Forgot Password?</p>
                         <p className="sub-heading">Please submit the email address to get the link for resetting the
                             password of your
                             account</p>
 
-                        <div className="alert alert-danger alert-dismissible fade show mt-2" role="alert" id="alertFGDiv" style={{display: 'none'}}>
+                        <div className="alert alert-danger alert-dismissible fade show mt-2" role="alert" style={{display: 'none'}}>
                             <strong id="alertFGMessage"></strong>
                             <button type="button" className="btn-close" aria-label="Close" onclick="hideMessage('#alertFGDiv')"></button>
                         </div>
 
                         <div className="each-animatted-input-div">
-                            <input type="email" id="fg_email" name="email" placeholder="Email Address" fdprocessedid="uhzj8d"
+                            <input type="email" id="fg_email" name="email" placeholder="Email Address"
                              value={email}
                              onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
 
-                        <button type="submit" className="btn submit-btn" fdprocessedid="gabfo">
+                        <button type="submit" className="btn submit-btn" >
                             <span id="FGBtnSpan">Get the Reset Password Link</span>
                             <div className="d-flex justify-content-center d-none" id="FGLoader">
                                 <div className="spinner-border" role="status">

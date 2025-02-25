@@ -34,7 +34,7 @@ export default function Appliedjobs() {
           <Jobheader />
           <div className="row mt-5">
             <div className="col-lg-8">
-              <p className="applied-job-heading" data-total="1">
+              <p className="applied-job-heading">
                 Jobs Applied ({joblength})
               </p>
               {appliedJobs.length > 0 ? (

@@ -5,12 +5,13 @@ import toast from "react-hot-toast";
 
 import Navbar from "../components/navbar";
 import UserFooter from "../components/userfooter";
+import { apiUrl } from "../helper";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios.get("http://ls.bizbybot.com/api/auth/user", {
+    axios.get(`${apiUrl}/api/auth/user`, {
         headers: {Authorization: `Bearer ${localStorage.getItem("Token")}`}})
       .then((response) => setUser(response.data))
       .catch((error) => toast.error("Error fetching user data:", error));
@@ -23,7 +24,7 @@ export default function Profile() {
         <div className="container">
           <div className="row">
             <div className="col-md-6 offset-md-3">
-              <p className="heading-para">Profile</p>// profile
+              <p className="heading-para">Profile</p>
               <div className="profile-image-div">
                 <div className="inner-div second">
                   <img

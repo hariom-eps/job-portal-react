@@ -17,7 +17,6 @@ import ForgotPassword from './pages/forgotpasswordpage'
 import Appliedjobs from './pages/jobrelated/appliedjobs';
 import Appliedsuccessfully from './pages/jobrelated/appliedsuccessfully';
 import Notfound from './pages/notfound';
-import Summernotetest from './pages/jobrelated/summernotetest';
 import Applyjob from './pages/jobrelated/applyjob';
 
 function App() {
@@ -42,7 +41,6 @@ function App() {
           <Route path='/jobs/:jobID' element={<JobDescription/>}/>
           <Route path='/jobs/apply/:jobID' element={<Applyjob/>}/>
           <Route path='*' element={<Notfound/>}/>
-          <Route path='/summernote' element={<Summernotetest/>}/>
         </Routes>
        </BrowserRouter>
     </div>

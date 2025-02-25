@@ -10,7 +10,6 @@ export default function events() {
   return (
     <div>
       <NavbarTop/>
-
       {/* Hero Section  */}
 
       <section className="main-hero-section"> 
@@ -20,7 +19,6 @@ export default function events() {
             <p className="hero-para">Events are an easy way to grow your business, network with others and learn new skills</p>
         </div>
       </section>
-
       {/* Search Section  */}
 
       <section className="main-search-section">
@@ -68,7 +66,6 @@ export default function events() {
             </form>
         </div>
       </section>
-
       {/* Event section  */}
 
       <section className="card-carousel-main-section">
@@ -99,7 +96,6 @@ export default function events() {
         </div>
         </div>
       </section>
-
 
       <Newsletter/>
       <Footer/>

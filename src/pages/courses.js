@@ -11,7 +11,6 @@ export default function courses() {
   return (
     <div>
         <NavbarTop/>
-
         {/* Hero Section  */}
 
         <section className="main-hero-section"> 
@@ -21,7 +20,6 @@ export default function courses() {
             <p className="hero-para">Investing in Professional Development increases your marketability</p>
         </div>
         </section>
-
         {/* Search Section  */}
 
         <section className="main-search-section">
@@ -115,7 +113,6 @@ export default function courses() {
                 </div>
             </div>
         </section>
-
         {/* Course section  */}
 
         <section className="card-carousel-main-section">
