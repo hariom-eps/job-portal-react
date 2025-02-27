@@ -5,14 +5,17 @@ import Footer from '../../components/footer';
 import Newsletter from '../../components/newsletter';
 import '../../css/style.css'
 import { toast } from 'react-hot-toast';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { useEffect , useState} from 'react';
 import axios from 'axios'
 import { InputMask } from '@react-input/mask';
 
+
 export default function Applyjob() {
     const { jobID } = useParams();
+    const navigate=useNavigate();
     const [jobs, setJobs] = useState([]);
+    const [errors, setErrors] = useState({});
     const [formData, setFormData]=useState({
         phone:'',
         address:'',
@@ -34,7 +37,38 @@ export default function Applyjob() {
             ...prevState,
             [name]: type === 'file' ? files[0] : value,
         }));
+        setErrors(prevErrors => ({
+            ...prevErrors,
+            [name]: '',
+        }));
     };
+
+    const validateForm = () => {
+        let newErrors = {};
+
+        if (!formData.phone.trim()) {
+            newErrors.phone = "Phone Number is required.";
+        }
+        if (!formData.address.trim()) {
+            newErrors.address = "Address is required.";
+        }
+        if (!formData.city.trim()) {
+            newErrors.city = "City is required.";
+        }
+        if (!formData.state.trim()) {
+            newErrors.state = "State is required.";
+        }
+        if (!formData.pincode.trim()) {
+            newErrors.pincode = "Pincode is required.";
+        }
+        if (!formData.file) {
+            newErrors.file = "Resume file is required.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     
     useEffect(() => {   
         axios.get(`http://ls.bizbybot.com/api/jobs/${jobID}/details`)
@@ -52,6 +86,9 @@ export default function Applyjob() {
       const applyForJob = (e) => {
         e.preventDefault();
 
+        if (!validateForm()) {
+            return;
+        }
         const formDataToSend = new FormData();
 
         Object.entries(formData).forEach(([key, value]) => {
@@ -70,6 +107,7 @@ export default function Applyjob() {
         .then(response => {
             if (response.status === 200 || response.status === 201) {
                 toast.success("Successfully applied for the job!");
+                navigate('/applied-successfully');
             } else {
                 toast.warn(`Unexpected response: ${response.status} - ${response.statusText}`);
             }
@@ -131,7 +169,7 @@ export default function Applyjob() {
                                 <div className="col-md-6">
                                     <div className="each-animatted-input-div">
                                         <input type="email" name="email" value={email} id="email" required="" placeholder='Email Address'/>
-                                        <span className="text-danger error-text" id="email-error"></span>
+                                        
                                     </div>
                                 </div>
                                 <div className="col-md-6">
@@ -139,7 +177,7 @@ export default function Applyjob() {
                                         <InputMask  type="tel" name="phone" value={formData.phone} 
                                         mask="(___)-(___)-____" replacement={{ _: /\d/ }} 
                                         id="contact_phone" onChange={handleChange} required="" inputmode="text" placeholder='Phone Number' />
-                                        <span className="text-danger error-text" id="phone-error"></span>
+                                        <span className="text-danger error-text">{errors.phone}</span>
                                     </div>
                                 </div>
                                 <div className="col-md-6">
@@ -147,25 +185,25 @@ export default function Applyjob() {
                                 <div className="col-md-12">
                                     <div className="each-animatted-input-div">
                                         <input type="text" name="address" id="address" value={formData.address} onChange={handleChange} required="" placeholder='Address' />
-                                        <span className="text-danger error-text" id="address-error"></span>
+                                        <span className="text-danger error-text">{errors.address}</span>
                                     </div>
                                 </div>
                                 <div className="col-md-4">
                                     <div className="each-animatted-input-div">
                                         <input type="text" name="city" id="city" value={formData.city} onChange={handleChange} required="" placeholder='City' />
-                                        <span className="text-danger error-text" id="city-error"></span>
+                                        <span className="text-danger error-text">{errors.city}</span>
                                     </div>
                                 </div>
                                 <div className="col-md-4">
                                     <div className="each-animatted-input-div">
                                         <input type="text" name="state" id="state" value={formData.state} onChange={handleChange} required="" placeholder='State' />
-                                        <span className="text-danger error-text" id="state-error"></span>
+                                        <span className="text-danger error-text">{errors.state}</span>
                                     </div>
                                 </div>
                                 <div className="col-md-4">
                                     <div className="each-animatted-input-div">
                                         <input type="text" name="pincode" id="pincode"  value={formData.pincode} onChange={handleChange} required="" placeholder='Pincode' />
-                                        <span className="text-danger error-text" id="pincode-error"></span>
+                                        <span className="text-danger error-text">{errors.pincode}</span>
                                     </div>
                                 </div>
                             </div>
@@ -178,7 +216,7 @@ export default function Applyjob() {
                                 <label for="resumeUpload">UPLOAD RESUME</label>
                             </label>
                             <p className="suggetion">(*Allowed file extensions are docx, doc, pdf)</p>
-                            <span className="text-danger error-text" id="file-error"></span>
+                            <span className="text-danger error-text">{errors.file}</span>
                         </div>
                         <button className="btn submit-application-btn">SUBMIT THE APPLICATION</button>
                     </form>

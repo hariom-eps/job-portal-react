@@ -5,8 +5,9 @@ import "../css/style.css";
 import Modal from "react-modal";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { apiUrl } from "../helper";
 
-const userdetails = "http://ls.bizbybot.com/api/auth/user";
+const userdetails = `${apiUrl}/api/auth/user`;
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);

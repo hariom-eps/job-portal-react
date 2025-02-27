@@ -6,6 +6,7 @@ import Navbar from "../../components/navbar";
 import Jobheader from "../../components/jobheader";
 import { Link } from 'react-router';
 import axios from 'axios';
+import { apiUrl } from '../../helper';
 
 export default function Appliedjobs() {
   const [appliedJobs,setAppliedJobs]=useState('');
@@ -13,7 +14,7 @@ export default function Appliedjobs() {
   const [joblength,setJobLength]=useState(0);
 
   useEffect(()=>{
-    axios.get(`http://ls.bizbybot.com/api/jobs/applies`,{
+    axios.get(`${apiUrl}/api/jobs/applies`,{
       headers:{Authorization: `Bearer ${token}`},})
       .then((response) => {
         const jobData = response.data.data || [];

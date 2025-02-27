@@ -231,20 +231,31 @@
               <p className="common-slider-heading">Latest Jobs ({joblength})</p>
               <div>
                 {jobs.length > 0 ? (
-                  <OwlCarousel className="slider owl-theme" loop={false} margin={20} dots={false} navText={['‹', '›']} nav responsive={{
+                  <OwlCarousel
+                  className="slider owl-theme"
+                  loop={false}
+                  margin={20}
+                  dots={false}
+                  nav
+                  navText={[
+                    `<span class="material-symbols-outlined">arrow_back</span>`, // Previous button
+                    `<span class="material-symbols-outlined">arrow_forward</span>`, // Next button
+                  ]}
+                  responsive={{
                     0: {
-                      items: 1,  
+                      items: 1,
                       margin: 20,
                     },
                     768: {
-                      items: 2,  
+                      items: 2,
                       margin: 20,
                     },
                     1200: {
-                      items: 4, 
+                      items: 4,
                       margin: 20,
                     },
-                  }}>
+                  }}
+                >
                     {jobs.map((job) => (
                       <div key={job.id} className="each-job-card">
                         <h3>

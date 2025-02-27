@@ -56,9 +56,9 @@
     padding-inline: 0;
 }
 .navbar-nav .nav-link.active {
-    color: #ffffff !important;  /* Bootstrap default blue */
-    font-weight: bold;           /* Make it stand out */
-    border-bottom: 3px solid #ffffff; /* Add an underline */
+    color: #ffffff !important;
+    font-weight: bold;     
+    border-bottom: 3px solid #ffffff; 
 }
 
 .navbar-main .navbar-nav .nav-item {
@@ -672,7 +672,7 @@ footer .footer-bottom-para {
     top: 0;
     width: 100%;
     z-index: 1000;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Smooth shadow effect */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 @media (max-width: 768px) {
     .main-search-section .search-form-div-main {
@@ -1334,22 +1334,22 @@ img, svg {
 }
 .gapfortiles {
     display: flex;
-    align-items: center; /* Ensures vertical alignment */
-    gap: 10px; /* Adjust the space between items */
-    /* border: solid; */
+    align-items: center;
+    gap: 10px; 
+
 }
 .gapfortiles::before {
-    content: "•";  /* Bullet character */
-    color: grey;  /* Grey color */
-    font-size: 14px; /* Adjust size if needed */
-    margin-right: 5px; /* Space between bullet and text */
+    content: "•"; 
+    color: grey; 
+    font-size: 14px;
+    margin-right: 5px;
     display: inline-block;
 }
 @media screen and (max-width: 768px){
     .posted-job-btns-div {
         display: flex ;
         flex-direction: column !important;
-        align-items: flex-start !important; /* Keeps alignment consistent */
+        align-items: flex-start !important;
     }
 }
 .main-hero-section2 {
@@ -1366,6 +1366,12 @@ img, svg {
     height: 100%;
     -o-object-fit: cover;
     object-fit: cover;
+}
+.error-text, .error {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgb(255, 0, 51) !important;
+    margin-top: 5px;
 }
 .main-hero-section2 .hero-content-area {
     position: relative;
@@ -1548,7 +1554,7 @@ img, svg {
     font-weight: 500;
 }
 .not-found-container {
-    background-color: #1a1d21; /* Dark background */
+    background-color: #1a1d21; 
     text-align: center;
     height: 100vh;
     width: 100vw;
@@ -1561,7 +1567,7 @@ img, svg {
   
   .not-found-container p {
     font-size: .8rem;
-    color: #575c66 !important; /* Light gray text */
+    color: #575c66 !important;
   }
   
   .not-found-container .btn {
@@ -1811,7 +1817,7 @@ img, svg {
 .nav-dropdown-main-div2.show {
     opacity: 1;
     visibility: visible;
-    top: 0px; /* Adjust for smooth transition */
+    top: 0px; 
 }
  .nav-dropdown-inner-div2 {
     margin-top: 58px;
@@ -2247,7 +2253,7 @@ a {
     margin-top: 48px;
 }
 #resumeUpload {
-    display: none; /* Hides the default file input */
+    display: none; 
 }
 .select-menu.active .select-btn i {
     -webkit-transform: rotate(-180deg);
@@ -2388,6 +2394,8 @@ a {
 
 .owl-prev span,
 .owl-next span {
+    color: #000000;
+    font-weight: 900;
     font-size: 20px;
     display: flex;
     align-items: center;
