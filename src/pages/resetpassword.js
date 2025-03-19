@@ -6,6 +6,7 @@ import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 import toast  from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
+import { apiUrl } from '../helper';
 
 export default function Resetpassword() {
     const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function Resetpassword() {
 
         console.log('Sending request to API...');
         try {
-            const response = await axios.post('http://ls.bizbybot.com/api/auth/password/reset', {
+            const response = await axios.post(`${apiUrl}/api/auth/password/reset`, {
                 token,
                 password,
                 confirm_password: confirmPassword,

@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 
 export default function signup() {
   const token=localStorage.getItem('Token');
+  
   return (
     <div className={token?'d-none':''}>
       <section className="signup-cta-main-section">

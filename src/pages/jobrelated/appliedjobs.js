@@ -65,7 +65,9 @@ export default function Appliedjobs() {
                       src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg"
                       alt="Sale"
                     />
-                    {appliedJob.job.salary_min} - {appliedJob.job.salary_max || "Salary"}
+                    {appliedJob.job.salary_min ? `${(appliedJob.job.salary_min / 1000).toFixed(0)}K` : "Salary"} - 
+                    {appliedJob.job.salary_max ? `${(appliedJob.job.salary_max / 1000).toFixed(0)}K` : "Salary"}
+                    &nbsp;{appliedJob.job.salary_currency}&nbsp;per year
                   </span>
                   <span className="gapfortiles">
                     <img

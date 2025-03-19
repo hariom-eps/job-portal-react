@@ -6,6 +6,6 @@ export default function Userfooter() {
     <div className="container">
         <p> Copyright © 2025 Legal Spiel</p>
     </div>
-</footer>
+    </footer>
   )
 }

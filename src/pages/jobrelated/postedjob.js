@@ -5,6 +5,7 @@ import '../../css/style.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import toast from "react-hot-toast";
+import { apiUrl } from "../../helper";
 
 export default function Postedjob() {
   const [postedJobs, setPostedJobs] = useState([]);
@@ -21,7 +22,7 @@ export default function Postedjob() {
       return;
     }
 
-    axios.get("http://ls.bizbybot.com/api/jobs", {
+    axios.get(`${apiUrl}/api/jobs`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => {
@@ -48,11 +49,10 @@ export default function Postedjob() {
     console.log(`Deleting Job ID: ${jobId}`); 
   };
   
-
 const handleDeleteJob = () => {
   if (jobIdToDelete) {
     axios
-      .delete(`http://ls.bizbybot.com/api/jobs/${jobIdToDelete}/delete`, {
+      .delete(`${apiUrl}/api/jobs/${jobIdToDelete}/delete`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
@@ -105,7 +105,9 @@ const handleDeleteJob = () => {
                       </span>
                       <span className="gapfortiles">
                         <img src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg" alt="Salary" />
-                        {job.salary_min} - {job.salary_max || "Salary"}
+                        {job.salary_min ? `${(job.salary_min / 1000).toFixed(0)}K` : "Salary"} - 
+                        {job.salary_max ? `${(job.salary_max / 1000).toFixed(0)}K` : "Salary"}
+                        &nbsp;{job.salary_currency}&nbsp;per year
                       </span>
                       <span className="gapfortiles">
                         <img src="http://ls.bizbybot.com/front/images/icons/job-type.svg" alt="Job Type" />

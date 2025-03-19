@@ -44,7 +44,7 @@ export default function Signuppage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!validateForm()) return; // Stop submission ico no val
+    if (!validateForm()) return; //ico no val
 
     axios.post(loginUrl, { first_name: name, email, password })
       .then((response) => {

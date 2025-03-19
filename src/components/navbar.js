@@ -6,13 +6,14 @@ import Modal from "react-modal";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { apiUrl } from "../helper";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const userdetails = `${apiUrl}/api/auth/user`;
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -22,28 +23,22 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(userdetails, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("Token")}`,
-        },
-      })
+    setIsLoggedIn(!!token);
+  }, [location]);
+
+  useEffect(() => {
+    axios.get(userdetails,{headers: {
+          Authorization: `Bearer ${localStorage.getItem("Token")}`,},})
       .then((response) => setUser(response.data))
-      .catch((error) => console.log("Error fetching user data:", error));
-  }, []);
+      .catch((error) => console.log("Error fetching user data:", error));}, []);
 
   const togglenavbar = () => {
     setIsNavbarVisible(!isNavbarVisible);
-    // console.log('hi')
   };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-
-  useEffect(() => {
-    setIsLoggedIn(!!token);
-  }, [location]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY >= 100);
@@ -59,16 +54,13 @@ export default function Navbar() {
   };
 
   const navbarClass =
-    ["/post-job","/posted-job","/applied-jobs","/applied-successfully","/profile","/resetpassword","/login","/signup","/forgotpassword",]
-    .includes(location.pathname) || scrolled? "nav-main-section2": "";
+    ["/post-job","/posted-job","/applied-jobs","/applied-successfully","/profile","/resetpassword","/login","/signup","/forgotpassword",`/post-job/{userID}/update`]
+    .some(path => location.pathname.includes(path)) || 
+      /^\/post-job\/\d+\/update$/.test(location.pathname) ||  scrolled? "nav-main-section2": "";
 
   return (
     <>
-      <nav className={`navbar navbar-main navbar-expand-md ${navbarClass}`}>
-        <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={() => setModalIsOpen(false)}
-        />
+      <div className={`navbar navbar-main navbar-expand-md another-nav-section ${navbarClass}`}>
         <div className="container">
           <Link className="navbar-brand" to="/">
             <img
@@ -107,7 +99,7 @@ export default function Navbar() {
                   <div className="nav-dropdown-inner-div2">
                     <ul>
                       <li>
-                        <p>Hi, {user ? user.data.first_name : "Loading.."}</p>
+                        <p>Hi, {user ? user.data.first_name : <Skeleton width={80} height={20} />}</p>
                       </li>
                       <li>
                         <Link to={"/applied-jobs"}>
@@ -167,8 +159,7 @@ export default function Navbar() {
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-              <li className="nav-item ">
-                {/* <li className={`nav-item ${location.pathname === "/signup" || "/login" ? "d-none" : ""} `}>  */}
+              <div className="nav-item ">
                 <Link
                   className={`nav-link ${
                     location.pathname.startsWith("/jobs") ? "active" : ""
@@ -177,28 +168,8 @@ export default function Navbar() {
                 >
                   Jobs
                 </Link>
-              </li>
+              </div>
               <li className="nav-item">
-                <Link
-                  className={`nav-link ${
-                    location.pathname.startsWith("/events") ? "active" : ""
-                  }`}
-                  to="/events"
-                >
-                  Events
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={`nav-link ${
-                    location.pathname.startsWith("/courses") ? "active" : ""
-                  }`}
-                  to="/courses"
-                >
-                  Courses
-                </Link>
-              </li>
-              <div className="nav-item">
                 {/* changed from li to div temp  */}
                 {!isLoggedIn ? (
                   <button
@@ -218,18 +189,18 @@ export default function Navbar() {
                     Login
                   </button>
                 ) : (
-                  <li className="nav-item nav-dropdown">
-                    <a
+                  <div>
+                    <Link to={'/post-job'}
                       className="nav-link"
                       href=""
-                      onClick={() => navigate("/post-job")}
+                      // onClick={() => navigate("/post-job")}
                     >
                       Post Now
                       {/* <img
                           src="http://ls.bizbybot.com/front/images/icons/nav-arrow.svg"
                           alt="arrow"
                         /> */}
-                    </a>
+                    </Link>
                     {/* <div className="nav-dropdown-div">
                         <div className="nav-dropdown-inner-div">
                           <Link to={'/post-job'}>Post a Job</Link>
@@ -237,9 +208,9 @@ export default function Navbar() {
                           <Link to={'/post-a-course'}>Post a Course</Link>
                         </div>
                       </div> */}
-                  </li>
+                  </div>
                 )}
-              </div>
+              </li>
               <li className="nav-item">
                 {!isLoggedIn ? (
                   <button
@@ -274,7 +245,7 @@ export default function Navbar() {
                       />
                     </div>
                     <div className="nav-user-name">
-                      {user ? user.data.first_name : "Loading.."}
+                      {user ? user.data.first_name : <Skeleton width={80} height={20} />}
                       <img
                         src="http://ls.bizbybot.com/front/images/icons/nav-dropdown.svg"
                         alt="Arrow"
@@ -285,12 +256,12 @@ export default function Navbar() {
                     <div className="nav-dropdown-main-div">
                       <div className="nav-dropdown-inner-div">
                         <ul>
-                          <li>
+                          <li className="profile-dropdown" onClick={()=>navigate('/profile')}>
                             <p>
-                              Hi, {user ? user.data.first_name : "Loading.."}
+                              Hi, {user ? user.data.first_name : <Skeleton width={80} height={20} />}
                             </p>
                           </li>
-                          <li>
+                          <li  className="profile-dropdown">
                             <Link to={"/applied-jobs"}>
                               <img
                                 src="http://ls.bizbybot.com/front/images/icons/nav-jov-appiled.svg"
@@ -299,7 +270,7 @@ export default function Navbar() {
                               Jobs Applied
                             </Link>
                           </li>
-                          <li>
+                          <li  className="profile-dropdown">
                             <Link to={"/posted-job"}>
                               <img
                                 src="http://ls.bizbybot.com/front/images/icons/nav-posted-jobs.svg"
@@ -308,7 +279,7 @@ export default function Navbar() {
                               Jobs Posted
                             </Link>
                           </li>
-                          <li>
+                          <li  className="profile-dropdown">
                             <Link to={"/profile"}>
                               <img
                                 src="http://ls.bizbybot.com/front/images/icons/edit-profile.svg"
@@ -317,7 +288,7 @@ export default function Navbar() {
                               Profile
                             </Link>
                           </li>
-                          <li>
+                          <li  className="profile-dropdown">
                             <Link onClick={handleLogout}>
                               <img
                                 src="http://ls.bizbybot.com/front/images/icons/logout.svg"
@@ -335,7 +306,7 @@ export default function Navbar() {
             </ul>
           </div>
         </div>
-      </nav>
+      </div>
       <nav
         className={`mob-navbar ${isNavbarVisible ? "show-navbar" : ""}`}
         id="mobNavbar"
@@ -346,6 +317,8 @@ export default function Navbar() {
               src="http://ls.bizbybot.com/front/images/logo/logo.png"
               className="img-fluid"
               alt="Logo"
+              width="60"
+            height="60"
             />
           </Link>
           <img
@@ -357,21 +330,11 @@ export default function Navbar() {
         </div>
 
         <ul className="navbar-nav mob-navbar-ul">
-          <li className="nav-item">
+          <div className="nav-item">
             <Link to="/jobs" className="nav-link">
               Jobs
             </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/events" className="nav-link">
-              Events
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/courses" className="nav-link">
-              Courses
-            </Link>
-          </li>
+          </div>
           <li className="nav-item nav-item-extra">
             {isLoggedIn && (
               <>
@@ -410,7 +373,20 @@ export default function Navbar() {
             </Link>
           </div>
         ) : (
-          <></>
+          <div className="mob-nav-btns">
+            <Link to={'/login'} className="mob-login-btn">
+              <img
+                src="http://ls.bizbybot.com/front/images/icons/logout.svg"
+                alt="Logout"/>
+              Login
+            </Link>
+            <Link to={'/signup'} className="mob-signup-btn" >
+                <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+                    <path d="M8.45076 8.85398C10.2917 8.85398 11.7841 7.3616 11.7841 5.52065C11.7841 3.6797 10.2917 2.18732 8.45076 2.18732C6.60982 2.18732 5.11743 3.6797 5.11743 5.52065C5.11743 7.3616 6.60982 8.85398 8.45076 8.85398Z" stroke="black" strokeWidth="1.5"></path>
+                    <path d="M17.6174 8.85398H15.9508M15.9508 8.85398H14.2841M15.9508 8.85398V7.18732M15.9508 8.85398V10.5207M15.1149 15.5207C15.1174 15.384 15.1174 15.2448 15.1174 15.104C15.1174 13.0332 12.1324 11.354 8.45077 11.354C4.7691 11.354 1.7841 13.0332 1.7841 15.104C1.7841 17.1748 1.7841 18.854 8.45077 18.854C10.3099 18.854 11.6508 18.7232 12.6174 18.4898" stroke="black" strokeWidth="1.5" strokeLinecap="round"></path>
+                </svg>
+                Sign Up</Link>
+          </div>
         )}
       </nav>
     </>

@@ -4,15 +4,21 @@ import { useEffect } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
+import moment from "moment";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import Navbar from "../../components/navbar";
 import Newsletter from "../../components/newsletter";
 import Footer from "../../components/footer";
 import "../../css/style.css";
+import { apiUrl } from "../../helper";
+import Appliedjobs from "./appliedjobs";
 
 export default function Jobdescription() {
   const { jobID } = useParams();
   const [jobs, setJobs] = useState([]);
+  const [appliedJobs,setAppliedJobs]=useState([]);
   const navigate = useNavigate();
   const token = localStorage.getItem("Token");
   const userId = JSON.parse(localStorage.getItem("User"))?.id;
@@ -22,7 +28,7 @@ export default function Jobdescription() {
 
   useEffect(() => {
     axios
-      .get(`http://ls.bizbybot.com/api/jobs/${jobID}/details`)
+      .get(`${apiUrl}/api/jobs/${jobID}/details`)
       .then((response) => {
         const jobData = response.data.data || [];
         setJobs(jobData);
@@ -32,7 +38,21 @@ export default function Jobdescription() {
       .catch((error) => {
         toast.error(error);
       });
+
+      axios.get(`${apiUrl}/api/jobs/applies`,{
+        headers:{Authorization: `Bearer ${token}`}})
+        .then((response)=>{
+          const jobData=response.data.data || [];
+          setAppliedJobs(jobData);
+          console.log('Applied jobs ID',jobData.map(job => job.job_id));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
   }, [jobID]);
+
+  const isJobApplied = appliedJobs.some((job) => job.job_id == jobID);
+  console.log(isJobApplied);
 
   return (
     <div>
@@ -52,10 +72,36 @@ export default function Jobdescription() {
           <div className="row">
             <div className="col-md-8 right-padding">
               <div className="single-job-heading-div p-0 border-0">
-                <p>
-                  {jobs?.title}
-                  <span className="label-span">(Posted X days ago)</span>
-                </p>
+              <p>
+              {jobs?.title ? jobs.title : <Skeleton width={150} height={20} />}
+              <span className="label-span">&nbsp;&nbsp;&nbsp;( Posted {moment(jobs?.created_at).fromNow()} )
+                  </span>  
+              </p>
+                {!isJobApplied ? (
+                  <>
+                  <div className={jobs.created_by === userId ? " " : "d-none"}>
+                    <div
+                      style={{
+                        paddingTop: "17px",
+                        marginLeft: "0px",
+                        color: "grey",
+                        fontSize:'2 rem'
+                      }}>
+                      Created by you
+                    </div>
+                  </div>
+                  </>
+                  ) : ( <div
+                    style={{
+                      paddingTop: "15px",
+                      marginLeft: "0px",
+                      color: "grey",
+                      fontSize:'2 rem',
+                      color: "#008000"  
+                    }}>
+                    Already Applied
+                  </div>
+                  )}
               </div>
 
               <div className="common-description-area-start">
@@ -64,26 +110,38 @@ export default function Jobdescription() {
                     <img
                       src="http://ls.bizbybot.com/front/images/icons/company.svg"
                       alt="company"/>
-                    {jobs?.company?.name}
+                    {jobs?.company?.name ? jobs.company.name : <Skeleton width={60} height={20} />}
                   </span>
                   <span>
                     <img
                       src="http://ls.bizbybot.com/front/images/icons/time-period.svg"
                       alt="Time"/>
-                    {jobs?.experience_min}-{jobs?.experience_max} Years
+                    {jobs?.experience_min && jobs?.experience_max ? (
+                      `${jobs.experience_min} - ${jobs.experience_max}`
+                    ) : (
+                      <Skeleton width={100} height={20} />
+                    )} Years
                   </span>
                   <span>
                     <img
                       src="http://ls.bizbybot.com/front/images/icons/access-time.svg"
                       alt="Job Type"/>
-                    {jobs?.job_types}
+                    {jobs?.job_types?.length > 0 ? (
+                      jobs.job_types.join(", ")  
+                    ) : (
+                      <Skeleton width={50} height={20} />
+                    )}
                   </span>
                   <span>
                     <img
                       src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg"
                       alt="Sale"/>
-                    {jobs?.salary_min}-{jobs?.salary_max}
-                    INR(₹) per year
+                   {jobs?.salary_min !== undefined && jobs?.salary_max !== undefined ? (
+                      `${(jobs.salary_min / 1000).toFixed(0)}K - ${(jobs.salary_max / 1000).toFixed(0)}K`
+                    ) : (
+                      <Skeleton width={80} height={20} />
+                    )}
+                    &nbsp;{jobs.salary_currency}&nbsp;per year
                   </span>
                 </div>
 
@@ -93,7 +151,7 @@ export default function Jobdescription() {
                       <label>Job Title:</label>
                     </div>
                     <div className="col-8 col-sm-9">
-                      <p>{jobs?.title || "Loading..."}</p>
+                      <p>{jobs?.title || <Skeleton width={80} height={20} />}</p>
                     </div>
                   </div>
                   <div className="row">
@@ -101,7 +159,7 @@ export default function Jobdescription() {
                       <label>Job Type:</label>
                     </div>
                     <div className="col-8 col-sm-9">
-                      <p>{jobs?.job_types?.[0] || "Loading..."}</p>
+                      <p>{jobs?.job_types?.[0] ||  <Skeleton width={80} height={20} />}</p>
                     </div>
                   </div>
                   <div className="row">
@@ -110,7 +168,7 @@ export default function Jobdescription() {
                     </div>
                     <div className="col-8 col-sm-9">
                       <p>
-                        {jobs?.experience_min} - {jobs?.experience_max} years
+                        {jobs?.experience_min ||  <Skeleton width={10} height={20} />} - {jobs?.experience_max} years
                       </p>
                     </div>
                   </div>
@@ -119,7 +177,7 @@ export default function Jobdescription() {
                       <label>Location:</label>
                     </div>
                     <div className="col-8 col-sm-9">
-                      <p>{jobs?.location || "Loading..."}</p>
+                      <p>{jobs?.location ||  <Skeleton width={80} height={20} />}</p>
                     </div>
                   </div>
                   <div className="row">
@@ -127,7 +185,7 @@ export default function Jobdescription() {
                       <label>Industry Type:</label>
                     </div>
                     <div className="col-8 col-sm-9">
-                      <p>{jobs?.industry_types?.[0] || "Loading..."}</p>
+                      <p>{jobs?.industry_types?.[0] ||  <Skeleton width={80} height={20} />}</p>
                     </div>
                   </div>
                   <div className="row">
@@ -135,7 +193,7 @@ export default function Jobdescription() {
                       <label>Workplace Type:</label>
                     </div>
                     <div className="col-8 col-sm-9">
-                      <p>{jobs?.workplace_types?.[0] || "Loading..."}</p>
+                      <p>{jobs?.workplace_types?.[0] ||  <Skeleton width={80} height={20} />}</p>
                     </div>
                   </div>
                 </div>
@@ -143,61 +201,53 @@ export default function Jobdescription() {
                 <div className="all-brif-details">
                   <p className="sub-heading-para">Job Description</p>
                   <div className="long-short-para">
-                    <p
-                      dangerouslySetInnerHTML={{
-                        __html:
-                          jobs?.descriptions || "No description available.",}}/>
-                    <ul>
-                      {jobs?.qualifications ? (
-                        jobs?.qualifications
-                          .split("</li>")
-                          .map(
-                            (item, index) =>
-                              item && (
-                                <li
-                                  key={index}
-                                  dangerouslySetInnerHTML={{
-                                    __html: item.replace("<li>", ""),}}/>
-                              )
-                          )
-                      ) : (
-                        <li>xx</li>
-                      )}
-                    </ul>
+                  {jobs?.descriptions ? (
+                    <p dangerouslySetInnerHTML={{ __html: jobs.descriptions }} />
+                  ) : (
+                    <Skeleton width={280} height={180} />
+                  )}
                   </div>
 
                   <p className="sub-heading-para">Qualifications</p>
                   <div className="long-short-para">
-                    <ul>
-                      {jobs?.qualifications ? (
-                        jobs?.qualifications
-                          .split("</li>")
-                          .filter((item) => item.trim())
-                          .map((item, index) => (
-                            <li
-                              key={index}
-                              dangerouslySetInnerHTML={{
-                                __html: item.replace("<li>", ""),}}/>
-                          ))
-                      ) : (
-                        <li>No qualifications available</li>
-                      )}
-                    </ul>
-                  </div>
+                  <ul>
+                    {jobs?.qualifications ? (
+                      jobs.qualifications
+                        .split("</li>")
+                        .filter((item) => item.trim()) 
+                        .map((item, index) => (
+                          <li
+                            key={index}
+                            dangerouslySetInnerHTML={{
+                              __html: item.replace("<li>", ""), 
+                            }}
+                          />
+                        ))
+                    ) : (
+                       
+                      <Skeleton width={100} height={20} count={3} />
+                    )}
+                  </ul>
+                </div>
 
                   <p className="sub-heading-para">Skills</p>
                   <ul className="list">
-                    {jobs?.skills?.map((skill, index) => (
-                      <li
-                        key={index}
-                        dangerouslySetInnerHTML={{ __html: skill }}/>))}
+                  {jobs?.skills?.length > 0 ? (
+                    jobs.skills.map((skill, index) => (
+                      <li key={index} dangerouslySetInnerHTML={{ __html: skill }} />
+                    ))
+                  ) : (
+                    <Skeleton width={100} height={20} count={3} />
+                  )}
                   </ul>
 
                   <p className="sub-heading-para">About Company</p>
                   <div className="long-short-para">
-                    <p
-                      dangerouslySetInnerHTML={{
-                        __html: jobs?.company?.about_company || "Loading...",}}/>
+                    {jobs?.company?.about_company ? (
+                      <p dangerouslySetInnerHTML={{ __html: jobs.company.about_company }} />
+                    ) : (
+                      <Skeleton width={280} height={120} />
+                    )}
                   </div>
 
                   <div className="job-details-list">
@@ -206,9 +256,14 @@ export default function Jobdescription() {
                         <label>Company:</label>
                       </div>
                       <div className="col-8 col-sm-9">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: jobs?.company?.name || "Loading...",}}/>
+                      <p>
+                      {jobs?.company?.name ? (
+                        <span dangerouslySetInnerHTML={{ __html: jobs.company.name }} />
+                      ) : (
+                        <Skeleton width={80} height={20} />
+                      )}
+                    </p>
+
                       </div>
                     </div>
                     <div className="row">
@@ -216,10 +271,14 @@ export default function Jobdescription() {
                         <label>Address:</label>
                       </div>
                       <div className="col-8 col-sm-9">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html:
-                              jobs?.company?.address_line_1 || "Loading...",}}/>
+                      <p>
+  {jobs?.company?.address_line_1 ? (
+    <span dangerouslySetInnerHTML={{ __html: jobs.company.address_line_1 }} />
+  ) : (
+    <Skeleton width={80} height={20} />
+  )}
+</p>
+
                       </div>
                     </div>
                     <div className="row">
@@ -227,10 +286,14 @@ export default function Jobdescription() {
                         <label>Contact Person:</label>
                       </div>
                       <div className="col-8 col-sm-9">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html:
-                              jobs?.company?.contact_person || "Loading...",}}/>
+                      <p>
+  {jobs?.company?.contact_person ? (
+    <span dangerouslySetInnerHTML={{ __html: jobs.company.contact_person }} />
+  ) : (
+    <Skeleton width={80} height={20} />
+  )}
+</p>
+
                       </div>
                     </div>
                     <div className="row">
@@ -238,10 +301,14 @@ export default function Jobdescription() {
                         <label>Email:</label>
                       </div>
                       <div className="col-8 col-sm-9">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html:
-                              jobs?.company?.contact_email || "Loading...",}}/>
+                      <p>
+  {jobs?.company?.contact_email ? (
+    <span dangerouslySetInnerHTML={{ __html: jobs.company.contact_email }} />
+  ) : (
+    <Skeleton width={80} height={20} />
+  )}
+</p>
+
                       </div>
                     </div>
                     <div className="row">
@@ -249,10 +316,14 @@ export default function Jobdescription() {
                         <label>Contact:</label>
                       </div>
                       <div className="col-8 col-sm-9">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html:
-                              jobs?.company?.contact_phone || "Loading...",}}/>
+                      <p>
+  {jobs?.company?.contact_phone ? (
+    <span dangerouslySetInnerHTML={{ __html: jobs.company.contact_phone }} />
+  ) : (
+    <Skeleton width={80} height={20} />
+  )}
+</p>
+
                       </div>
                     </div>
                     <div className="row">
@@ -260,13 +331,19 @@ export default function Jobdescription() {
                         <label>Website:</label>
                       </div>
                       <div className="col-8 col-sm-9">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: jobs?.company?.website || "Loading...",}}/>
+                      <p>
+  {jobs?.company?.website ? (
+    <span dangerouslySetInnerHTML={{ __html: jobs.company.website }} />
+  ) : (
+    <Skeleton width={80} height={20} />
+  )}
+</p>
+
                       </div>
                     </div>
                   </div>
-
+                  {!isJobApplied ? (
+                  <>
                   <button
                     className={
                       jobs.created_by === userId ? "d-none" : "back-large-btn"
@@ -280,15 +357,14 @@ export default function Jobdescription() {
                       onClick={() => navigate(`/jobs`)}>
                       Go back to previous page
                     </button>
-                    <p
-                      style={{
-                        paddingBlock: "5px",
-                        marginLeft: "60px",
-                        color: "grey",
-                      }}>
-                      Created by you
-                    </p>
                   </div>
+                  </>
+                  ) : ( <button
+                    className="back-large-btn"
+                    onClick={() => navigate(`/jobs`)}>
+                    Go back to previous page
+                  </button> 
+                  )}
                 </div>
               </div>
             </div>
@@ -296,6 +372,7 @@ export default function Jobdescription() {
           </div>
         </div>
       </section>
+      
       <Newsletter />
       <Footer />
     </div>

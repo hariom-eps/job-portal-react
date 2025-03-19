@@ -7,6 +7,7 @@ import axios from 'axios';
 import Navbar from "../components/navbar";
 import Footer from '../components/footer';
 import { Nav } from 'react-bootstrap';
+import { apiUrl } from '../helper';
 
 export default function Forgotpasswordpage() {
     const navigate=useNavigate();
@@ -15,7 +16,7 @@ export default function Forgotpasswordpage() {
     const handleSubmit=(e)=>{
         e.preventDefault();
 
-    axios.post('http://ls.bizbybot.com/api/auth/password/forgot', { email })
+    axios.post(`${apiUrl}/api/auth/password/forgot`, { email })
       .then((response) => {
         if (response.status === 200) {
             toast.success('Password reset email sent successfully!');
@@ -34,7 +35,6 @@ export default function Forgotpasswordpage() {
             <div className="modal-content rounded-0">
                 <div className="modal-body">
                     
-
                     <form className="auth-main-inputes-div" onSubmit={handleSubmit}>
                         <input type="hidden" name="_token" autocomplete="off"/>                    
                         <p className="main-heading">Forgot Password?</p>

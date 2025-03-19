@@ -8,22 +8,32 @@
   import OwlCarousel from 'react-owl-carousel3';
   import 'owl.carousel/dist/assets/owl.carousel.css';
   import 'owl.carousel/dist/assets/owl.theme.default.css';
-
+  import "react-loading-skeleton/dist/skeleton.css";
 
   import Signup from "../components/signup";
   import Footer from "../components/footer";
   import Newsletter from "../components/newsletter";
   import NavbarTop from "../components/navbar";
   import { toast } from "react-hot-toast";
+  import { apiUrl } from "../helper";
+  import Category from "../components/category";
+  import { useNavigate } from "react-router-dom";
 
   export default function Home() {
 
     const [jobs, setJobs] = useState([]);
-    const [joblength,setJobLength]=useState('');
+    const [joblength,setJobLength]=useState('0');
     const [isActive, setIsActive] = useState(false);
     const [selectedJobType, setSelectedJobType] = useState('');
     const [jobTypes, setJobTypes] = useState([]);
     const [errorMessage, setErrorMessage] = useState(null); //  error 
+    const [appliedJobs,setAppliedJobs]=useState([]);
+    const token = localStorage.getItem("Token");
+    const userId = JSON.parse(localStorage.getItem("User"))?.id;
+    const navigate=useNavigate();
+    console.log("User ID:", userId);
+
+    console.log("user ID : ",userId);
     const [filters, setFilters] = useState({ 
       keyword: "",
       jobType: "",
@@ -31,11 +41,10 @@
     });
     const [showFilteredJobs, setShowFilteredJobs] = useState(false);
     const [filteredJobs, setFilteredJobs] = useState([]);
-    
     const handleClick = () => {
       setIsActive(!isActive);
     };
-
+    
     const handleJobTypeSelect = (jobType) => {
       setSelectedJobType(jobType.name); 
       setFilters({ ...filters, jobType: jobType.name.toLowerCase() }); // Update
@@ -70,7 +79,6 @@
       setShowFilteredJobs(true);
     };
     
-    
     const handleClearFilters = () => {
       setFilters({ keyword: "", jobType: "", location: "" });
       setFilteredJobs([]);
@@ -87,7 +95,7 @@
     // .catch(error => toast.error("Error:", error));
       
     useEffect(() => {   
-      axios.get("http://ls.bizbybot.com/api/jobs/latest")
+      axios.get(`${apiUrl}/api/jobs/latest`)
         .then(response => {
           console.log(response.data);
           setJobs(response.data.data || []);  
@@ -101,7 +109,7 @@
 
     useEffect(() => {
       axios
-        .get("http://ls.bizbybot.com/api/job-types")
+        .get(`${apiUrl}/api/job-types`)
         .then((response) => {
           if (response.data && response.data.data) {
             setJobTypes(response.data.data);
@@ -124,7 +132,29 @@
     }, []);
 
     console.log('Number of Jobs: ',joblength)
+    console.log("Job Created By:", jobs.created_by, "User ID:", userId);
 
+    useEffect(() => {
+      if (token) {
+          axios.get(`${apiUrl}/api/jobs/applies`, {
+              headers: { Authorization: `Bearer ${token}` }
+          })
+              .then((response) => {
+                  const jobData = response.data.data || [];
+                  setAppliedJobs(jobData);
+                  console.log('Applied jobs ID', jobData.map(job => job.job_id));
+              })
+              .catch((error) => {
+                  console.log(error);
+              });
+      }
+  }, [token]);
+
+  const isJobApplied = (jobId) => {
+    return appliedJobs.some((appliedJob) => appliedJob.job_id === jobId);
+};
+  console.log(isJobApplied);
+  
     return (
       <div>
         <NavbarTop />
@@ -134,7 +164,7 @@
           <img src={Herobgone} alt="Hero Image" className="img-fluid hero-bg-image" />
           <div className="container hero-content-area">
             <h1 className="hero-head">Matching talent with opportunity</h1>
-            <p className="hero-para">
+            <p className="hero-para" onClick={()=>navigate('/temp')}>
               Discover and apply for the latest job opportunities
             </p>
           </div>
@@ -151,8 +181,7 @@
                     width="25"
                     height="25"
                     viewBox="0 0 25 25"
-                    fill="none"
-                  >
+                    fill="none">
                     <path
                       d="M21.8364 21.1692L17.4934 16.8262M17.4934 16.8262C18.2363 16.0834 18.8256 15.2014 19.2277 14.2308C19.6297 13.2602 19.8367 12.2198 19.8367 11.1692C19.8367 10.1186 19.6297 9.07833 19.2277 8.1077C18.8256 7.13707 18.2363 6.25513 17.4934 5.51224C16.7506 4.76936 15.8686 4.18006 14.898 3.77802C13.9274 3.37597 12.8871 3.16904 11.8364 3.16904C10.7858 3.16904 9.74553 3.37597 8.7749 3.77802C7.80427 4.18006 6.92234 4.76936 6.17945 5.51224C4.67912 7.01257 3.83624 9.04746 3.83624 11.1692C3.83624 13.291 4.67912 15.3259 6.17945 16.8262C7.67978 18.3266 9.71466 19.1694 11.8364 19.1694C13.9582 19.1694 15.9931 18.3266 17.4934 16.8262Z"
                       stroke="#666666"
@@ -228,7 +257,10 @@
         <section className="card-carousel-main-section">
           {!showFilteredJobs && (
             <div className="container position-relative">
-              <p className="common-slider-heading">Latest Jobs ({joblength})</p>
+              <p className="common-slider-heading">
+                Latest Jobs (
+                  {joblength})
+              </p>
               <div>
                 {jobs.length > 0 ? (
                   <OwlCarousel
@@ -238,8 +270,8 @@
                   dots={false}
                   nav
                   navText={[
-                    `<span class="material-symbols-outlined">arrow_back</span>`, // Previous button
-                    `<span class="material-symbols-outlined">arrow_forward</span>`, // Next button
+                    `<span class="material-symbols-outlined">arrow_back</span>`,  
+                    `<span class="material-symbols-outlined">arrow_forward</span>`,  
                   ]}
                   responsive={{
                     0: {
@@ -269,13 +301,13 @@
                           <li>
                             <img src="http://ls.bizbybot.com/front/images/icons/time-period.svg" className="img-fluid" alt="Year" />
                             {job.experience_min && job.experience_max
-                              ? `${job.experience_min}-${job.experience_max} Years`
+                              ? `${job.experience_min} - ${job.experience_max} Years`
                               : "Experience Not Specified"}
                           </li>
                           <li>
                             <img src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg" className="img-fluid" alt="Sale" />
                             {job.salary_min && job.salary_max
-                              ? `${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()} ${job.salary_currency} per year`
+                              ? `${(job.salary_min / 1000).toFixed(0)}K - ${(job.salary_max / 1000).toFixed(0)}K ${job.salary_currency} per year`
                               : "Salary Not Specified"}
                           </li>
                           <li>
@@ -289,9 +321,27 @@
                         </ul>
                         <div className="job-type-apply-main-div">
                           <p className="job-type-label">{job.job_types}</p>
-                          <Link to={`/jobs/${job.id}`} className="apply-now-btn">
-                            APPLY NOW
+                          {job.created_by === userId ? (
+                          <Link to={`/jobs/${job.id}`} className="btn search-submit-btn">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                  <circle cx="12" cy="12" r="3"></circle>
+                              </svg>&nbsp;
+                              VIEW
                           </Link>
+                          ) : isJobApplied(job.id) ? (
+                            <Link to={`/jobs/${job.id}`} className="btn search-submit-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>&nbsp;
+                            VIEW
+                        </Link>
+                          ) : (
+                              <Link to={`/jobs/${job.id}`} className="apply-now-btn">
+                                  APPLY NOW
+                              </Link>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -361,9 +411,27 @@
                         </ul>
                         <div className="job-type-apply-main-div">
                           <p className="job-type-label">{job.job_types}</p>
-                          <Link to={`/jobs/${job.id}`} className="apply-now-btn">
-                            APPLY NOW
+                          {job.created_by === userId ? (
+                          <Link to={`/jobs/${job.id}`} className="btn search-submit-btn">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                  <circle cx="12" cy="12" r="3"></circle>
+                              </svg>&nbsp;
+                              VIEW
                           </Link>
+                          ) : isJobApplied(job.id) ? (
+                            <Link to={`/jobs/${job.id}`} className="btn search-submit-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>&nbsp;
+                            VIEW
+                        </Link>
+                          ) : (
+                              <Link to={`/jobs/${job.id}`} className="apply-now-btn">
+                                  APPLY NOW
+                              </Link>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -381,126 +449,8 @@
 
         <br />
         <br />
-        
-      <section className="top-department-catogiries-main-section">
-        <div className="container">
-          <p className="heading-para">Top Categories</p>
-          <div className="row px-0 px-lg-5">
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/MQ==">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/3e725023e4c44df35608222dee97bd44.png" />
-                  <p>Legal</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/Mg==">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/d99c14ba9fc23337e435d36a4ccd46c1.png" />
-                  <p>Tax</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/Mw==">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/7f4695636960e146c915b1490d296324.png" />
-                  <p>Human Resources</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/NA==">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/985db3dcfd9a1a3173c34257d7873daf.png" />
-                  <p>Accountancy and Finance</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/NQ==">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/a60ea0ce2d74029a94d74bbd4eba08ea.png" />
-                  <p>Financial services and Insurance</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/Ng==">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/05225099e80ca952df1198a3a28169fe.png" />
-                  <p>Technology and IT</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/Nw==">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/56aa7e9d549302a87cc8758977fe6ea2.png" />
-                  <p>Banking</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/OA==">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/29f13381471fc463109fd71862c00c65.png" />
-                  <p>Compliance</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/OQ==">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/b68fc45c41320aa5460177c7a64e5afa.png" />
-                  <p>Business Services</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/MTA=">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/4f29082c9e780d8acc63dd857a58dd1e.png" />
-                  <p>Engineering</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/MTE=">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/17a53ce4723db844a4d0522455b5162c.png" />
-                  <p>Office Support</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/MTI=">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/fad25355b43e6acd92a9d038e6d396cb.png" />
-                  <p>Healthcare</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/MTM=">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/c1c92b225dda676d3894748483df5d5c.png" />
-                  <p>Aviation</p>
-                </div>
-              </a>
-            </div>
-            <div className="col-md-6 col-lg-4 mt-3">
-              <a href="http://ls.bizbybot.com/jobs/top-categories/MTQ=">
-                <div className="each-category">
-                  <img src="https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/5a73abc51771b77ec989040fdfddcbf6.png" />
-                  <p>Life Sciences</p>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+                  
+      <Category/>
       <Signup />
       <Newsletter />
       <Footer />

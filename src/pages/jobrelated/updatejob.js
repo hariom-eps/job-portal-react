@@ -1,8 +1,8 @@
-import React, { Component, useRef } from "react";
-import "../../css/style.css";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
+import axios, { Axios } from 'axios';
+import React, { useEffect, useState } from 'react'
+import { useParams , useNavigate } from 'react-router'
+import { apiUrl } from '../../helper';
+import { toast } from 'react-hot-toast';
 import $ from "jquery";
 import "summernote/dist/summernote-lite.css";
 import "summernote/dist/summernote-lite.js";
@@ -10,14 +10,26 @@ import { InputMask } from "@react-input/mask";
 
 import Navbar from "../../components/navbar";
 import Newsletter from "../../components/newsletter";
-import Footer from "../../components/footer";
+import UserFooter from "../../components/userfooter";
 import Jobheader from "../../components/jobheader";
-import { apiUrl } from "../../helper";
-import { useNavigate } from "react-router";
 
-export default function Postjob() {
-  const [industryTypes, setIndustryTypes] = useState([]);
-  const [countries, setCountries] = useState([]);
+export default function Updatejob() {
+    const {jobID} = useParams();
+    const [jobs,setJobs] = useState();
+    const [company,setCompany] = useState();
+    const token = localStorage.getItem("Token")
+    console.log(jobID);
+
+    useEffect(()=>{
+        axios.get(`${apiUrl}/api/jobs/${jobID}/view`,{
+            headers:{Authorization: `Bearer ${token}`}})
+        .then((response)=>{ setJobs(response.data.data);
+            console.log('API Data',response.data.data)
+        })
+        .catch((error) => toast.error("Error fetching user data:", error));
+    },[jobID]);
+
+    const [industryTypes, setIndustryTypes] = useState([]);
   const [jobSkills, setJobSkills] = useState([]);
   const [jobTypes, setJobTypes] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -158,28 +170,9 @@ export default function Postjob() {
         toast.error("Error fetching workplace types.");
       });
 
-    axios
-      .get('https://api.first.org/data/v1/countries',)
-      .then(response=>{
-        const countriesData = response.data?.data;
-        console.log(countriesData);
-        if (countriesData) {
-          const countryNames = Object.values(countriesData).map(item => item.country);
-          setCountries(countryNames);
-        } else {
-          console.log("Failed");
-        }
-      })
-      .catch((error)=>{
-        if(error.response?.status==429){
-          console.log("Too many requests! Try later");}
-        else{
-          console.log(error);}
-      });
-
-    axios.get(`${apiUrl}/api/company`, {
+      axios.get(`${apiUrl}/api/company`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` }
-      })
+    })
         .then((response) => {
             const companyData = response.data.data;
             setCompanies(companyData);
@@ -189,71 +182,89 @@ export default function Postjob() {
             console.error("Error fetching company data:", error);
             toast.error("Error fetching company data");
         });
-
-        $("#jobDescriptionEditor").summernote({
-          placeholder: "Type job description here...",
-          tabsize: 2,
-          height: 200,
-          callbacks: {
-            onChange: function (contents) {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                descriptions: contents,
-              }));
-        
-              setErrors((prevErrors) => ({
-                ...prevErrors,
-                description: contents.trim() && contents !== "<p><br></p>" ? "" : "Job Description is required.",
-              }));
-            },
-          },
-        });
-        
-        $("#jobQualificationEditor").summernote({
-          placeholder: "Type job qualifications here...",
-          tabsize: 2,
-          height: 200,
-          callbacks: {
-            onChange: function (contents) {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                qualifications: contents,
-              }));
-        
-              setErrors((prevErrors) => ({
-                ...prevErrors,
-                qualifications: contents.trim() && contents !== "<p><br></p>" ? "" : "Job Qualifications are required.",
-              }));
-            },
-          },
-        });
-        
-        $("#aboutCompanyEditor").summernote({
-          placeholder: "Something about the company...",
-          tabsize: 2,
-          height: 200,
-          callbacks: {
-            onChange: function (contents) {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                aboutCompany: contents,
-              }));
-        
-              setErrors((prevErrors) => ({
-                ...prevErrors,
-                aboutCompany: contents.trim() && contents !== "<p><br></p>" ? "" : "Company details are required.",
-              }));
-            },
-          },
-        });
-        
-    return () => {
-      $("#jobDescriptionEditor").summernote("destroy");
-      $("#jobQualificationEditor").summernote("destroy");
-      $("#aboutCompanyEditor").summernote("destroy");
-    };
   }, []);
 
+  useEffect(() => {
+    if (jobs) {
+        $("#jobDescriptionEditor").summernote('code', jobs.descriptions || '');
+        $("#jobQualificationEditor").summernote('code', jobs.qualifications || '');
+        $("#aboutCompanyEditor").summernote('code', jobs.company_about || '');
+    }
+}, [jobs]);  
+
+useEffect(() => {
+    if (jobs) {
+        $("#jobDescriptionEditor").summernote('code', jobs.descriptions || '');
+        $("#jobQualificationEditor").summernote('code', jobs.qualifications || '');
+        $("#aboutCompanyEditor").summernote('code', jobs.company_about || '');
+    }
+}, [jobs]);  
+
+useEffect(() => {
+    $("#jobDescriptionEditor").summernote({
+        placeholder: "Type job description here...",
+        tabsize: 2,
+        height: 200,
+        callbacks: {
+            onChange: function (contents) {
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    descriptions: contents,
+                }));
+
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    description: contents.trim() && contents !== "<p><br></p>" ? "" : "Job Description is required.",
+                }));
+            },
+        },
+    });
+
+    $("#jobQualificationEditor").summernote({
+        placeholder: "Type job qualifications here...",
+        tabsize: 2,
+        height: 200,
+        callbacks: {
+            onChange: function (contents) {
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    qualifications: contents,
+                }));
+
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    qualifications: contents.trim() && contents !== "<p><br></p>" ? "" : "Job Qualifications are required.",
+                }));
+            },
+        },
+    });
+
+    $("#aboutCompanyEditor").summernote({
+        placeholder: "Something about the company...",
+        tabsize: 2,
+        height: 200,
+        callbacks: {
+            onChange: function (contents) {
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    company_about: contents,
+                }));
+
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    aboutCompany: contents.trim() && contents !== "<p><br></p>" ? "" : "Company details are required.",
+                }));
+            },
+        },
+    });
+
+    return () => {
+        $("#jobDescriptionEditor").summernote("destroy");
+        $("#jobQualificationEditor").summernote("destroy");
+        $("#aboutCompanyEditor").summernote("destroy");
+    };
+}, []);
+  
   const handleCompanySelect = (companyId) => {
     setSelectedCompanyId(companyId); 
     setFormData(prev => ({
@@ -263,6 +274,19 @@ export default function Postjob() {
         website: companies.find(company => company.id === companyId)?.website || "",
     }));
 };
+useEffect(() => {
+    if (company && company.id) {  
+        axios.get(`${apiUrl}/api/company/${company.id}/view`, { 
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then((response) => {
+            setCompany(response.data.data);
+            console.log('API Data', response.data.data);
+        })
+        .catch((error) => toast.error("Error fetching user data:", error));
+    }
+}, [company]);  
+
 const handleExperienceChange = (e) => {
   const { name, value } = e.target;
   let numValue = Number(value);
@@ -314,6 +338,49 @@ const handleCurrencySelect = (currency) => {
   setActiveDropdown(null);
 };
 
+useEffect(() => {
+    if(jobs){
+      setFormData({
+          title: jobs?.title || "",
+          location: jobs?.location || "",
+          descriptions: jobs?.descriptions || "",
+          job_category: jobs?.job_category || null,
+          skills: jobs?.skills || [],
+          industry_types: jobs?.industry_types || [],
+          job_types: jobs?.job_types || [],
+          workplace_types: jobs?.workplace_types || [],
+          experience_min: jobs?.experience_min || "",
+          experience_max: jobs?.experience_max || "",
+          salary_min: jobs?.salary_min || "",
+          salary_max: jobs?.salary_max || "",
+          qualifications: jobs?.qualifications || "",
+          name: jobs?.name || "",
+          website: jobs?.website || "",
+          company_about: jobs?.company_about || "",
+          contact_person: jobs?.contact_person || "",
+          contact_email: jobs?.contact_email || "",
+          phone: jobs?.phone || "",
+          address_line_1: jobs?.address_line_1 || "",
+          city: jobs?.city || "",
+          country: jobs?.country || "",
+          pincode: jobs?.pincode || "",
+          landmark: jobs?.landmark || "",
+          state: jobs?.state || "",
+          company_photos: jobs?.company_photos || [],
+          company_id: jobs?.company_id || "0",
+          contract_year: jobs?.contract_year || "2",
+          salary_currency: jobs?.salary_currency || null,
+      });
+      const foundCompany = companies.find((company) => company.id === jobs.company_id);
+
+            if (foundCompany) {
+                setSelectedCompanyId(foundCompany.id);
+            } else {
+                setSelectedCompanyId(null);
+            }
+    }
+   }, [jobs]);
+
 const handleSubmit = (e) => {
   e.preventDefault();
   let newErrors = {};
@@ -325,7 +392,7 @@ const handleSubmit = (e) => {
       newErrors.location = "Job Location is required.";
     }
     if (!formData.descriptions?.trim() || formData.descriptions === "<p><br></p>") {
-      newErrors.description = "Job Description is required.";
+      newErrors.descriptions = "Job Description is required.";
     }
     if (!formData.job_category){
       newErrors.job_category="Job Category is required.";
@@ -370,7 +437,7 @@ const handleSubmit = (e) => {
         company: "Please select a company.",
       }));
     }
-
+    
     if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
         return; 
@@ -383,17 +450,23 @@ const handleSubmit = (e) => {
   if (!qualifications.trim()) {
     newErrors.qualifications = "Qualifications are required.";
   }
-  if (!companyAbout.trim()) {
-    newErrors.companyAbout = "Company information is required.";
-  }
+
+  const formatArrayToString = (arr) => (Array.isArray(arr) ? arr.join(',') : '');
+  const formattedData = {
+    ...formData,
+    skills: formatArrayToString(formData.skills),
+    industry_types: formatArrayToString(formData.industry_types),
+    job_types: formatArrayToString(formData.job_types),
+    workplace_types: formatArrayToString(formData.workplace_types),
+};
 
   const postData = {
-    ...formData,
+    ...formattedData,
     descriptions: description,
     qualifications: qualifications,
     company_about: companyAbout,
   };
-
+  
   if (activeTab === "existing") {
     if (!selectedCompanyId) {
       console.log("Please select a company.");
@@ -402,13 +475,13 @@ const handleSubmit = (e) => {
 
     axios
       .post(
-        `${apiUrl}/api/jobs`,
+        `${apiUrl}/api/jobs/${jobID}/edit`,
         { ...postData, company_id: selectedCompanyId },
         { headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` } }
       )
       .then((jobResponse) => {
-        toast.success("Job posted successfully!");
-        console.log("Job posted:", jobResponse.data);
+        toast.success("Job Updated successfully!");
+        console.log("Job Updated:", jobResponse.data);
         navigate("/posted-job")
       })
       .catch((error) => {
@@ -418,88 +491,13 @@ const handleSubmit = (e) => {
           toast.error("An error occurred.");
         }
       });
-
-  } else {
-    const companyData = {
-      name: formData.name,
-      website: formData.website,
-      about_company: companyAbout,
-      contact_person: formData.contact_person,
-      contact_phone: formData.phone,
-      contact_email: formData.contact_email,
-      address_line_1: formData.address_line_1,
-      pincode: formData.pincode,
-      landmark: formData.landmark,
-      city: formData.city,
-      state: formData.state,
-      country: formData.country,
-    };
-    
-    axios
-      .post(`${apiUrl}/api/company`, companyData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` },
-      })
-      .then((companyResponse) => {
-        const companyId = companyResponse.data.data.id;
-        console.log("Company created:", companyResponse.data);
-
-        axios
-          .post(
-            `${apiUrl}/api/jobs`,
-            { ...postData, company_id: companyId },
-            { headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` } }
-          )
-          .then((jobResponse) => {
-            toast.success("Job posted successfully!");
-            console.log("Job posted:", jobResponse.data);
-            navigate("/posted-job")
-          })
-          .catch((error) => {
-            if (error.response) {
-              toast.error(error.response.data.message);
-            } else {
-              toast.error("An error occurred.");
-            }
-          });
-      })
-      .catch((error) => {
-        if (
-          error.response &&
-          error.response.data.message === "Company already exists." &&
-          error.response.data.data?.id
-        ) {
-          const companyId = error.response.data.data.id;
-          console.log("Company already exists, using existing ID:", companyId);
-
-          axios
-            .post(
-              `${apiUrl}/api/jobs`,
-              { ...postData, company_id: companyId },
-              { headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` } }
-            )
-            .then((jobResponse) => {
-              toast.success("Job posted successfully!");
-              console.log("Job posted:", jobResponse.data);
-              navigate("/posted-job")
-            })
-            .catch((error) => {
-              if (error.response) {
-                toast.error(error.response.data.message);
-              } else {
-                toast.error("An error occurred.");
-              }
-            });
-        } else {
-          toast.error(error.response?.data?.message || "An error occurred.");
-        }
-      });
-  }
+  } 
 };
 
   return (
     <div>
-      <Navbar />
-      <section className="job-post-main-section">
+        <Navbar/>
+        <section className="job-post-main-section">
         <div className="container">
           <Jobheader />
           <div className="row">
@@ -621,7 +619,7 @@ const handleSubmit = (e) => {
 
                 {/* Job Skill Dropdown */}
                 <div className="col-md-12 mt-4">
-                  <label className="formlabel" htmlFor="jobSkillInput">
+                  <label className="formlabel" for="jobSkillInput">
                     Job Skill
                   </label>
                   <div
@@ -934,7 +932,6 @@ const handleSubmit = (e) => {
                         placeholder="Select Currency"
                         readOnly
                         value={formData.salary_currency || ""}
-                        onChange={handleCurrencySelect}
                       />
                       <i>
                         <img src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg" alt="Chevron" />
@@ -949,7 +946,6 @@ const handleSubmit = (e) => {
                   </div>
                   {errors.salary_currency && <span className="text-danger error-text">{errors.salary_currency}</span>}
                 </div>
-                
                 {/* Salary Min */}
                 <div className="col-md-4 mt-4">
                   <label htmlFor="minSalary" className="formlabel d-none d-md-block">&nbsp;</label>
@@ -995,17 +991,17 @@ const handleSubmit = (e) => {
 
               <p className="post-pages-heading">Company Information</p>
               <div className="row">
-                <div className="col-12">
-                  <ul className="nav course-tab-ul existing-add-company-ul" id="myTab" role="tablist">
-                      <li className="nav-item" role="presentation">
+                <div class="col-12">
+                  {/* <ul class="nav course-tab-ul existing-add-company-ul" id="myTab" role="tablist">
+                      <li class="nav-item" role="presentation">
                           <button type="button" className={`create-new-existing ${activeTab === "existing" ? "active" : ""}`} id="existing-tab"
                           onClick={() => setActiveTab("existing")}>Select existing company</button>
                       </li>
-                      <li className="nav-item" role="presentation">
+                      <li class="nav-item" role="presentation">
                           <button type="button" className={`create-new-existing ${activeTab === "new" ? "active" : ""}`} id="video-tab"
                           onClick={() => setActiveTab("new")}>Add new company</button>
                       </li>
-                  </ul>
+                  </ul> */}
                 </div>
                 <div className="col-12">
                   <div className="tab-content" id="myTabContent">
@@ -1013,11 +1009,11 @@ const handleSubmit = (e) => {
                     <div className={`tab-pane fade ${activeTab === "existing" ? "active show" : ""}`} id="existingCompany">
                       <div className="col-md-6 mt-4">
                           <label htmlFor="existingCompanyInp" className="formlabel">
-                              Existing company
+                              Company
                           </label>
                           <div className={`select-menu options-main-div ${activeDropdown === "existingCompany" ? "active" : ""}`}>
                               <div className="select-btn" onClick={() => handleDropdownClick("existingCompany")}>
-                                  <input hidden id="existing_company_id" className="input-class" name="company_id" readOnly value={selectedCompanyId || ""} />
+                                  <input hidden id="existing_company_id" className="input-class" name="company_id" value={selectedCompanyId || ""} />
                                   <input id="existingCompanyInp" type="text" className="sBtn-text input-class" placeholder="Select existing company" readOnly value={companies.find(company => company.id === selectedCompanyId)?.name || ""} />
                                   <i><img src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg" alt="Chevron" /></i>
                               </div>
@@ -1045,202 +1041,79 @@ const handleSubmit = (e) => {
                       id="location-error"
                     >{errors.company}</span>
                       </div>
-                  </div>
+                      {/* <div id="existing-company-div" class="common-description-area-start mt-4">
+                                        <p class="long-short-para" id="company-about_company">
+                                            </p><p>{}</p>
+                                        <p></p>
+                                        <div class="job-details-list">
+                                            <div class="row">
+                                                <div class="col-4 col-sm-3">
+                                                    <label>Company:</label>
+                                                </div>
+                                                <div class="col-8 col-sm-9">
+                                                    <p id="company-name">toeuoeute</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4 col-sm-3">
+                                                    <label>Address:</label>
+                                                </div>
+                                                <div class="col-8 col-sm-9">
+                                                    <p id="company-address">
+                                                        sdgsfgdfgdfg, dsgdfg, India, 343434
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4 col-sm-3">
+                                                    <label>Contact Person:</label>
+                                                </div>
+                                                <div class="col-8 col-sm-9">
+                                                    <p id="company-contact_person">sfgdfgdf
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4 col-sm-3">
+                                                    <label>Email:</label>
+                                                </div>
+                                                <div class="col-8 col-sm-9">
+                                                    <p id="company-contact_email">gdfgdf@gmail.com
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4 col-sm-3">
+                                                    <label>Contact:</label>
+                                                </div>
+                                                <div class="col-8 col-sm-9">
+                                                    <p id="company-contact_phone">(345)-(454)-5454
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4 col-sm-3">
+                                                    <label>Website:</label>
+                                                </div>
+                                                <div class="col-8 col-sm-9">
+                                                    <p id="company-website">grger.com</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div> */}
+                        </div>
                     {/* New Company  */}
-                    <div className={`tab-pane fade ${activeTab === "new" ? "active show" : ""}`} id="newCompany">
-                      <div className="row pe-lg-5">
-                        <div className="col-md-6 mt-4">
-                          <div className="each-animatted-input-div mt-0">
-                            <input
-                              type="text"
-                              id="companyName"
-                              name="name"
-                              placeholder="Company Name"
-                              value={formData.name || ""}
-                              onChange={handleChange}/>
-                            <span
-                              className="text-danger error-text"
-                              id="name-error"
-                            ></span>
-                          </div>
-                        </div>
-
-                        <div className="col-md-6 mt-4">
-                          <div className="each-animatted-input-div mt-0">
-                            <input
-                              type="text"
-                              id="companyWebsite"
-                              name="website"
-                              placeholder="Company Website"
-                              value={formData.website || ""}
-                              onChange={handleChange}/>
-                            <span
-                              className="text-danger error-text"
-                              id="website-error"
-                            ></span>
-                          </div>
-                        </div>
-                        <div className="col-md-12 mt-4">
-                          <label className="formlabel">About Company</label>
-                          <div id="aboutCompanyEditor">
-                          </div><span className="text-danger error-text">{errors.company_about}</span>
-                        </div>
-                        <div className="col-md-6 mt-4">
-                          <div className="each-animatted-input-div mt-0">
-                            <input
-                              type="text"
-                              id="contactPersonName"
-                              name="contact_person"
-                              placeholder="Contact Person Name"
-                              onChange={handleChange}/>
-                            <span
-                              className="text-danger error-text"
-                              id="contact_person-error"
-                            ></span>
-                          </div>
-                        </div>
-                        <div className="col-md-6 mt-4">
-                          <div className="each-animatted-input-div mt-0">
-                            <input
-                              type="text"
-                              id="contactEmail"
-                              name="contact_email"
-                              placeholder="Contact Email"
-                              onChange={handleChange}/>
-                            <span
-                              className="text-danger error-text"
-                              id="contact_email-error"
-                            ></span>
-                          </div>
-                        </div>
-                        <div className="col-md-6 mt-4">
-                          <div className="each-animatted-input-div mt-0">
-                            <InputMask
-                              type="tel"
-                              name="phone"
-                              mask="(___)-(___)-____"
-                              replacement={{ _: /\d/ }}
-                              id="contact_phone"
-                              required=""
-                              inputMode="text"
-                              placeholder=" Contact Phone No."
-                              onChange={handleChange}/>
-                            <span
-                              className="text-danger error-text"
-                              id="contact_phone-error"
-                            ></span>
-                          </div>
-                        </div>
-                        <div className="col-md-12 mt-4">
-                          <div className="each-animatted-input-div mt-0">
-                            <input
-                              type="text"
-                              id="address"
-                              name="address_line_1"
-                              placeholder="Address"
-                              onChange={handleChange}/>
-                            <span
-                              className="text-danger error-text"
-                              id="address_line_1-error"
-                            ></span>
-                          </div>
-                        </div>
-                        <div className="col-md-4 mt-4">
-                          <label htmlFor="ticketPrice" className="formlabel">
-                            &nbsp;
-                          </label>
-                          <div className="each-animatted-input-div mt-0">
-                            <input
-                              type="text"
-                              id="city"
-                              name="city"
-                              placeholder="City"
-                              onChange={handleChange}/>
-                            <span
-                              className="text-danger error-text"
-                              id="city-error"
-                            ></span>
-                          </div>
-                        </div>
-
-                        <div className="col-md-5 mt-4">
-                          <label htmlFor="country" className="formlabel">
-                            Select Country
-                          </label>
-                          <div
-                            className={`select-menu options-main-div ${
-                              activeDropdown === "country" ? "active" : ""
-                            }`}
-                          >
-                            <div
-                              className="select-btn"
-                              onClick={() => handleDropdownClick("country")}
-                            >
-                              <input
-                                type="text"
-                                className="sBtn-text"
-                                id="country"
-                                placeholder="Country"
-                                readOnly
-                                value={formData.country || ""}
-                              />
-                              <i>
-                                <img
-                                  src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                                  alt="Chevron"
-                                />
-                              </i>
-                            </div>
-                            {activeDropdown === "country" && (
-                              <ul className="options py-0">
-                                {countries.map((country, index) => (
-                                  <li
-                                    key={index}
-                                    className="option"
-                                    onClick={() => {
-                                      setFormData({ ...formData, country });
-                                      setActiveDropdown(null);
-                                    }}
-                                  >
-                                    {country}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                          <span className="text-danger error-text" id="country-error"></span>
-                        </div>
-
-                        <div className="col-md-3 mt-4">
-                          <label htmlFor="ticketPrice" className="formlabel">
-                            &nbsp;
-                          </label>
-                          <div className="each-animatted-input-div mt-0">
-                            <input
-                              type="text"
-                              id="zip"
-                              name="pincode"
-                              placeholder="Postcode"
-                              onChange={handleChange}/>
-                            <span
-                              className="text-danger error-text"
-                              id="pincode-error"
-                            ></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
 
-              <button className="btn submit-application-btn"> POST THE JOB NOW</button>
+              <button className="btn submit-application-btn"> UPDATE THE JOB NOW</button>
             </form>
           </div>
         </div>
-      </section>
-      <Newsletter />
-      <Footer />
+        </section>
+        
+        <UserFooter/>
     </div>
-  );
+  )
 }
