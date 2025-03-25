@@ -3,8 +3,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Toaster } from 'react-hot-toast';
 
-import RequireAuth from './requireauth';
-import RequireAuthLogin from './requireauthlogin';
+import RequireAuth from './requireAuth';
+import RequireAuthLogin from './requireAuthLogin';
+import RedirectIfAuthenticated from './redirectIfAuthenticated';
 
 import Home from './pages/homePage';
 import Login from './pages/loginPage';
@@ -32,8 +33,8 @@ function App() {
         <Routes>
           <Route path='/' element={<Home/>}/>
           <Route path='/jobs' element={<Home/>}/>
-          <Route path='/login' element={<Login/>}/>
-          <Route path='/signup' element={<Signup/>}/>
+          <Route path='/login' element={<RedirectIfAuthenticated><Login/></RedirectIfAuthenticated>}/>
+          <Route path='/signup' element={<RedirectIfAuthenticated><Signup/></RedirectIfAuthenticated>}/>
           <Route path='/profile' element={<RequireAuth><Profile/></RequireAuth>}/>
           <Route path='/forgotpassword'element={<ForgotPassword/>}/>
           <Route path='/resetpassword' element={<ResetPassword/>}/>
