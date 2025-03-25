@@ -6,6 +6,7 @@ import Navbar from '../components/homeNavbar';
 import Footer from '../components/footer';
 import toast  from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
+
 import { apiUrl } from '../helperURL';
 import { assetUrl } from '../helperASSET';
 

@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { assetUrl } from '../helperASSET'
 
 export default function newsletter() {

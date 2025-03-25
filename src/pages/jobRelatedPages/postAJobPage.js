@@ -12,8 +12,9 @@ import Navbar from "../../components/homeNavbar";
 import Newsletter from "../../components/newsLetterDisplay";
 import Footer from "../../components/footer";
 import Jobheader from "../../components/jobNavbar";
-import { apiUrl } from "../../helperURL";
 import { useNavigate } from "react-router";
+
+import { apiUrl } from "../../helperURL";
 import { assetUrl } from "../../helperASSET";
 
 export default function Postjob() {

@@ -8,8 +8,9 @@ import { useNavigate } from "react-router";
 
 import Navbar from "../components/homeNavbar";
 import UserFooter from "../components/oneLineFooter";
-import { apiUrl } from "../helperURL";
 import { InputMask } from "@react-input/mask";
+
+import { apiUrl } from "../helperURL";
 import { assetUrl } from "../helperASSET";
 
 export default function Profile() {

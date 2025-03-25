@@ -8,11 +8,12 @@ import Footer from "../../components/footer";
 import OwlCarousel from "react-owl-carousel3";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
-import { apiUrl } from "../../helperURL";
 import Category from "../../components/jobCategories";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { assetUrl } from "../../helperASSET";
+
+import { apiUrl } from "../helperURL";
+import { assetUrl } from "../helperASSET";
 
 export default function TopCategory() {
   const { categoryID } = useParams();

@@ -7,11 +7,11 @@ import axios from "axios";
 import moment from "moment";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-
 import Navbar from "../../components/homeNavbar";
 import Newsletter from "../../components/newsLetterDisplay";
 import Footer from "../../components/footer";
 import "../../css/style.css";
+
 import { apiUrl } from "../../helperURL";
 import { assetUrl } from "../../helperASSET";
 

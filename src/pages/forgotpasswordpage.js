@@ -6,7 +6,7 @@ import axios from 'axios';
 
 import Navbar from "../components/homeNavbar";
 import Footer from '../components/footer';
-import { Nav } from 'react-bootstrap';
+
 import { apiUrl } from '../helperURL';
 
 export default function Forgotpasswordpage() {

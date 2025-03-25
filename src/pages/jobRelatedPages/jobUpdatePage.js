@@ -1,7 +1,6 @@
 import axios, { Axios } from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { apiUrl } from "../../helperURL";
 import { toast } from "react-hot-toast";
 import $ from "jquery";
 import "summernote/dist/summernote-lite.css";
@@ -12,7 +11,9 @@ import Navbar from "../../components/homeNavbar";
 import Newsletter from "../../components/newsLetterDisplay";
 import UserFooter from "../../components/oneLineFooter";
 import Jobheader from "../../components/jobNavbar";
-import { assetUrl } from "../../helperASSET";
+
+import { apiUrl } from "../helperURL";
+import { assetUrl } from "../helperASSET";
 
 export default function Updatejob() {
   const { jobID } = useParams();

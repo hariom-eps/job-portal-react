@@ -6,6 +6,7 @@ import Navbar from "../../components/homeNavbar";
 import Jobheader from "../../components/jobNavbar";
 import { Link } from 'react-router';
 import axios from 'axios';
+
 import { apiUrl } from '../../helperURL';
 import { assetUrl } from '../../helperASSET';
 
