@@ -14,7 +14,6 @@ import { apiUrl } from "../helperURL";
 import { assetUrl } from "../helperASSET";
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = React.useState(true);
   const [firstname,setFirstName]=useState("");
   const [lastName, setLastName] = useState("");
@@ -31,28 +30,17 @@ export default function Profile() {
     if(userData){
       setStoredUserData(JSON.parse(userData));
     }
+    setLoading(false);
   },[])
 
   useEffect(() => {
-    if (user) setLoading(false);
-  }, [user]);
-
-  useEffect(() => {
-    axios.get(`${apiUrl}/api/auth/user`, {
-        headers: {Authorization: `Bearer ${localStorage.getItem("Token")}`}})
-      .then((response) => setUser(response.data))
-      .catch((error) => console.log("Error fetching user data:", error));
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      setFirstName(user?.data?.first_name || "");
-      setLastName(user?.data?.last_name || "");
-      setEmail(user?.data?.email || "");
-      setPhoneNumber(user?.data?.phone_number || "");
-      setLoading(false);
+    if (storedUserData) {
+      setFirstName(storedUserData.first_name || "");
+      setLastName(storedUserData.last_name || "");
+      setEmail(storedUserData.email || "");
+      setPhoneNumber(storedUserData.phone_number || "");
     }
-  }, [user]);
+  }, [storedUserData]); 
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -123,14 +111,14 @@ export default function Profile() {
                   id="fname"
                   name="first_name"
                   placeholder="First Name"
-                  value={storedUserData?.first_name} 
+                  value={firstname} 
                   onChange={(e) => {
                     setFirstName(e.target.value);
                     setShowSubmit(true);
                   }}
                 />
                 <label for="fname" class="">First Name</label>
-                {storedUserData ? "" : <Skeleton width={180} height={20} />}
+                {loading &&  <Skeleton width={180} height={20} />}
               </div>
 
               <div className="each-animatted-input-div">
@@ -155,14 +143,14 @@ export default function Profile() {
                   type="email"
                   id="email"
                   placeholder='Email'
-                  value={storedUserData?.email}
+                  value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
                     setShowSubmit(true);
                   }}                
                 />
                 <label for="email">Email Address</label>
-                {storedUserData ? "": <Skeleton width={180} height={20} />}
+                {loading &&  <Skeleton width={180} height={20} />}
               </div>
 
               <div className="each-animatted-input-div">
