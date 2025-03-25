@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import '../css/style.css';
-import Navbar from '../components/navbar';
+import Navbar from '../components/homeNavbar';
 import Footer from '../components/footer';
 import toast  from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
-import { apiUrl } from '../helper';
+import { apiUrl } from '../helperURL';
+import { assetUrl } from '../helperASSET';
 
 export default function Resetpassword() {
     const navigate = useNavigate();
@@ -90,7 +91,7 @@ export default function Resetpassword() {
                                 </button>
                             </div>
                             <button type="button" className="btn profile-back-btn mx-auto" onClick={() => navigate('/jobs')}>
-                                <img src="http://ls.bizbybot.com/front/images/icons/back-arrow.svg" alt="Back" />
+                                <img src={`${assetUrl}/front/images/icons/back-arrow.svg`} alt="Back" />
                                 Home
                             </button>
                         </form>

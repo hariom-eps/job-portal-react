@@ -5,9 +5,11 @@ import "../css/style.css";
 import Modal from "react-modal";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { apiUrl } from "../helper";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+
+import { apiUrl } from "../helperURL";
+import { assetUrl } from "../helperASSET";
 
 const userdetails = `${apiUrl}/api/auth/user`;
 
@@ -21,6 +23,15 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const token = localStorage.getItem("Token");
   const [user, setUser] = useState(null);
+  const [storedUserData, setStoredUserData] = useState(null);
+
+  useEffect(()=>{
+    const userData = localStorage.getItem("User");
+
+    if(userData){
+      setStoredUserData(JSON.parse(userData));
+    }
+  },[])
 
   useEffect(() => {
     setIsLoggedIn(!!token);
@@ -84,7 +95,7 @@ export default function Navbar() {
               >
                 <div className="nav-pro-img">
                   <img
-                    src="http://ls.bizbybot.com/front/images/icons/default-user-icon.svg"
+                    src={`${assetUrl}/front/images/icons/default-user-icon.svg`}
                     alt="Profile Image"
                   />
                 </div>
@@ -99,12 +110,12 @@ export default function Navbar() {
                   <div className="nav-dropdown-inner-div2">
                     <ul>
                       <li>
-                        <p>Hi, {user ? user.data.first_name : <Skeleton width={80} height={20} />}</p>
+                      <p>Hi,{storedUserData ? storedUserData.first_name : <Skeleton width={80} height={20} />}</p>
                       </li>
                       <li>
                         <Link to={"/applied-jobs"}>
                           <img
-                            src="http://ls.bizbybot.com/front/images/icons/nav-jov-appiled.svg"
+                            src={`${assetUrl}/front/images/icons/nav-jov-appiled.svg`}
                             alt="Job Applied"
                           />
                           Jobs Applied
@@ -113,7 +124,7 @@ export default function Navbar() {
                       <li>
                         <Link to={"/posted-job"}>
                           <img
-                            src="http://ls.bizbybot.com/front/images/icons/nav-posted-jobs.svg"
+                            src={`${assetUrl}/front/images/icons/nav-posted-jobs.svg`}
                             alt="Job Applied"
                           />
                           Jobs Posted
@@ -122,7 +133,7 @@ export default function Navbar() {
                       <li>
                         <Link to={"/profile"}>
                           <img
-                            src="http://ls.bizbybot.com/front/images/icons/edit-profile.svg"
+                            src={`${assetUrl}/front/images/icons/edit-profile.svg`}
                             alt="Change Password"
                           />
                           Profile
@@ -131,7 +142,7 @@ export default function Navbar() {
                       <li>
                         <Link onClick={handleLogout}>
                           <img
-                            src="http://ls.bizbybot.com/front/images/icons/logout.svg"
+                            src={`${assetUrl}/front/images/icons/logout.svg`}
                             alt="Logout"
                           />
                           Logout
@@ -193,21 +204,9 @@ export default function Navbar() {
                     <Link to={'/post-job'}
                       className="nav-link"
                       href=""
-                      // onClick={() => navigate("/post-job")}
                     >
                       Post Now
-                      {/* <img
-                          src="http://ls.bizbybot.com/front/images/icons/nav-arrow.svg"
-                          alt="arrow"
-                        /> */}
                     </Link>
-                    {/* <div className="nav-dropdown-div">
-                        <div className="nav-dropdown-inner-div">
-                          <Link to={'/post-job'}>Post a Job</Link>
-                          <Link to={'/post-an-event'}>Post an Event</Link>
-                          <Link to={'/post-a-course'}>Post a Course</Link>
-                        </div>
-                      </div> */}
                   </div>
                 )}
               </li>
@@ -240,14 +239,15 @@ export default function Navbar() {
                   <div className="nav-item nav-pro-li">
                     <div className="nav-pro-img">
                       <img
-                        src="http://ls.bizbybot.com/front/images/icons/default-user-icon.svg"
+                        src={`${assetUrl}/front/images/icons/default-user-icon.svg`}
                         alt="Profile Image"
                       />
                     </div>
                     <div className="nav-user-name">
-                      {user ? user.data.first_name : <Skeleton width={80} height={20} />}
+                     {storedUserData ? storedUserData.first_name : <Skeleton width={80} height={20} />}
+
                       <img
-                        src="http://ls.bizbybot.com/front/images/icons/nav-dropdown.svg"
+                        src={`${assetUrl}/front/images/icons/nav-dropdown.svg`}
                         alt="Arrow"
                         className="img-fluid"
                       />
@@ -258,13 +258,14 @@ export default function Navbar() {
                         <ul>
                           <li className="profile-dropdown" onClick={()=>navigate('/profile')}>
                             <p>
-                              Hi, {user ? user.data.first_name : <Skeleton width={80} height={20} />}
+                              Hi,{storedUserData ? storedUserData.first_name : <Skeleton width={80} height={20} />}
+
                             </p>
                           </li>
                           <li  className="profile-dropdown">
                             <Link to={"/applied-jobs"}>
                               <img
-                                src="http://ls.bizbybot.com/front/images/icons/nav-jov-appiled.svg"
+                                src={`${assetUrl}/front/images/icons/nav-jov-appiled.svg`}
                                 alt="Job Applied"
                               />
                               Jobs Applied
@@ -273,7 +274,7 @@ export default function Navbar() {
                           <li  className="profile-dropdown">
                             <Link to={"/posted-job"}>
                               <img
-                                src="http://ls.bizbybot.com/front/images/icons/nav-posted-jobs.svg"
+                                src={`${assetUrl}/front/images/icons/nav-posted-jobs.svg`}
                                 alt="Job Applied"
                               />
                               Jobs Posted
@@ -282,7 +283,7 @@ export default function Navbar() {
                           <li  className="profile-dropdown">
                             <Link to={"/profile"}>
                               <img
-                                src="http://ls.bizbybot.com/front/images/icons/edit-profile.svg"
+                                src={`${assetUrl}/front/images/icons/edit-profile.svg`}
                                 alt="Change Password"
                               />
                               Profile
@@ -291,7 +292,7 @@ export default function Navbar() {
                           <li  className="profile-dropdown">
                             <Link onClick={handleLogout}>
                               <img
-                                src="http://ls.bizbybot.com/front/images/icons/logout.svg"
+                                src={`${assetUrl}/front/images/icons/logout.svg`}
                                 alt="Logout"
                               />
                               Logout
@@ -314,7 +315,7 @@ export default function Navbar() {
         <div className="mob-navbar-top">
           <Link to="/jobs" className="navbar-brand p-0">
             <img
-              src="http://ls.bizbybot.com/front/images/logo/logo.png"
+              src={`${assetUrl}/front/images/logo/logo.png`}
               className="img-fluid"
               alt="Logo"
               width="60"
@@ -322,7 +323,7 @@ export default function Navbar() {
             />
           </Link>
           <img
-            src="http://ls.bizbybot.com/front/images/icons/nav-close.svg"
+            src={`${assetUrl}/front/images/icons/nav-close.svg`}
             alt="Close"
             onClick={togglenavbar}
             id="closeNavbar"
@@ -349,7 +350,7 @@ export default function Navbar() {
                   Post Now
                   <i className="fas">
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/mob-dropdown-arrow.svg"
+                      src={`${assetUrl}/front/images/icons/mob-dropdown-arrow.svg`}
                       alt="Arrow"
                       className="fas"
                       width="20"
@@ -366,7 +367,7 @@ export default function Navbar() {
           <div className="mob-nav-btns">
             <Link onClick={handleLogout} className="mob-login-btn">
               <img
-                src="http://ls.bizbybot.com/front/images/icons/logout.svg"
+                src={`${assetUrl}/front/images/icons/logout.svg`}
                 alt="Logout"
               />
               Logout
@@ -376,7 +377,7 @@ export default function Navbar() {
           <div className="mob-nav-btns">
             <Link to={'/login'} className="mob-login-btn">
               <img
-                src="http://ls.bizbybot.com/front/images/icons/logout.svg"
+                src={`${assetUrl}/front/images/icons/logout.svg`}
                 alt="Logout"/>
               Login
             </Link>

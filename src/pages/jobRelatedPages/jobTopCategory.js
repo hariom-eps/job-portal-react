@@ -1,30 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import Navbar from "../../components/navbar";
+import Navbar from "../../components/homeNavbar";
 import { Link } from "react-router-dom";
-import Newsletter from "../../components/newsletter";
+import Newsletter from "../../components/newsLetterDisplay";
 import Footer from "../../components/footer";
 import OwlCarousel from "react-owl-carousel3";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
-import { apiUrl } from "../../helper";
-import Category from "../../components/category";
+import { apiUrl } from "../../helperURL";
+import Category from "../../components/jobCategories";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { assetUrl } from "../../helperASSET";
 
 export default function TopCategory() {
-  const { categoryID } = useParams();  
+  const { categoryID } = useParams();
   const [categoryData, setCategoryData] = useState(null);
   const userId = JSON.parse(localStorage.getItem("User"))?.id;
-  const [jobs, setJobs] = useState([]);  
+  const [jobs, setJobs] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);  
-  const token = localStorage.getItem("Token"); 
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const token = localStorage.getItem("Token");
 
-  console.log("Category ID (String):", categoryID);
   const categoryIDNumber = Number(categoryID);
-  console.log("Category ID (Number):", categoryIDNumber);
 
   const isJobApplied = (jobId) => {
     return appliedJobs.some((appliedJob) => appliedJob.job_id === jobId);
@@ -32,14 +31,10 @@ export default function TopCategory() {
 
   useEffect(() => {
     axios
-      .get(
-        `${apiUrl}/api/industry-categories/${categoryID}/view`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
+      .get(`${apiUrl}/api/industry-categories/${categoryID}/view`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
-        console.log("Fetched Category Data:", response.data);
         setCategoryData(response.data.data);
       })
       .catch((error) => {
@@ -52,12 +47,11 @@ export default function TopCategory() {
       .get(`${apiUrl}/api/jobs/latest`)
       .then((response) => {
         const allJobs = response.data.data || [];
-        console.log("All Jobs:", allJobs);  
 
         const filtered = allJobs.filter(
           (job) => job.job_category === categoryIDNumber
         );
-        console.log("Filtered Jobs (Matching categoryID):", filtered);  
+        console.log("Filtered Jobs (Matching categoryID):", filtered);
 
         setJobs(allJobs);
         setFilteredJobs(filtered);
@@ -72,18 +66,17 @@ export default function TopCategory() {
       <Navbar />
       <section className="main-hero-section2">
         <img
-          src="http://ls.bizbybot.com/front/images/hero-image5.png"
+          src={`${assetUrl}/front/images/hero-image5.png`}
           alt="Hero Image"
           className="img-fluid hero-bg-image"
         />
         <div className="container hero-content-area">
           <h1 className="hero-head">
-          {categoryData?.name ? (
-            categoryData.name
-          ) : (
-            <Skeleton width={100} height={20} />
-          )}
-
+            {categoryData?.name ? (
+              categoryData.name
+            ) : (
+              <Skeleton width={100} height={20} />
+            )}
           </h1>
           <p className="sub-hero-para">Top Category</p>
         </div>
@@ -120,7 +113,7 @@ export default function TopCategory() {
                   <ul>
                     <li>
                       <img
-                        src="http://ls.bizbybot.com/front/images/icons/company.svg"
+                        src={`${assetUrl}/front/images/icons/company.svg`}
                         className="img-fluid"
                         alt="Company Name"
                       />
@@ -128,7 +121,7 @@ export default function TopCategory() {
                     </li>
                     <li>
                       <img
-                        src="http://ls.bizbybot.com/front/images/icons/time-period.svg"
+                        src={`${assetUrl}/front/images/icons/time-period.svg`}
                         className="img-fluid"
                         alt="Year"
                       />
@@ -138,7 +131,7 @@ export default function TopCategory() {
                     </li>
                     <li>
                       <img
-                        src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg"
+                        src={`${assetUrl}/front/images/icons/gross-sale.svg`}
                         className="img-fluid"
                         alt="Sale"
                       />
@@ -150,7 +143,7 @@ export default function TopCategory() {
                     </li>
                     <li>
                       <img
-                        src="http://ls.bizbybot.com/front/images/icons/job-type.svg"
+                        src={`${assetUrl}/front/images/icons/job-type.svg`}
                         className="img-fluid"
                         alt="Job Type"
                       />
@@ -158,7 +151,7 @@ export default function TopCategory() {
                     </li>
                     <li>
                       <img
-                        src="http://ls.bizbybot.com/front/images/icons/location.svg"
+                        src={`${assetUrl}/front/images/icons/location.svg`}
                         className="img-fluid"
                         alt="Location"
                       />
@@ -225,7 +218,7 @@ export default function TopCategory() {
           )}
         </div>
       </section>
-      <Category/>
+      <Category />
       <Newsletter />
       <Footer />
     </div>

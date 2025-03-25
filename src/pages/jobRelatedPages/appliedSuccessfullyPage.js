@@ -2,10 +2,10 @@ import React from 'react'
 import { Link } from 'react-router';
 import '../../css/style.css'
 
-import Navbar from "../../components/navbar";
+import Navbar from "../../components/homeNavbar";
 import Footer from '../../components/footer';
 
-export default function Appliedsuccessfully() {
+export default function AppliedSuccessfullyPage() {
   return (
     <div>
         <Navbar/>

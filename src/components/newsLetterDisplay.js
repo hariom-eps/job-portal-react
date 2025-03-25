@@ -1,10 +1,11 @@
 import React from 'react'
+import { assetUrl } from '../helperASSET'
 
 export default function newsletter() {
   return (
     <section className="cta-main-section">
-            <img src="http://ls.bizbybot.com/front/images/icons/cta-design-1.svg" className="img-fluid design-1" alt="Half Circle"/>
-            <img src="http://ls.bizbybot.com/front/images/icons/cta-design-2.svg" className="img-fluid design-2" alt="Half Circle"/>
+            <img src={`${assetUrl}/front/images/icons/cta-design-1.svg`} className="img-fluid design-1" alt="Half Circle"/>
+            <img src={`${assetUrl}/front/images/icons/cta-design-2.svg`} className="img-fluid design-2" alt="Half Circle"/>
             <div className="container">
                 <div className="cta-content-area subscribe-us-container">
                     <h5>Subscribe and get the latest updates directly to your email</h5>

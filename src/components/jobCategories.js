@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 
-export default function () {
+export default function Category() {
     const categories = [
         { id: 1, name: "Legal", img: "https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/3e725023e4c44df35608222dee97bd44.png" },
         { id: 2, name: "Tax", img: "https://stagingeps.s3.ap-south-1.amazonaws.com/legal-spiel/industry_icon/d99c14ba9fc23337e435d36a4ccd46c1.png" },

@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react'
 import toast from "react-hot-toast";
 import '../../css/style.css'
 
-import Navbar from "../../components/navbar";
-import Jobheader from "../../components/jobheader";
+import Navbar from "../../components/homeNavbar";
+import Jobheader from "../../components/jobNavbar";
 import { Link } from 'react-router';
 import axios from 'axios';
-import { apiUrl } from '../../helper';
+import { apiUrl } from '../../helperURL';
+import { assetUrl } from '../../helperASSET';
 
-export default function Appliedjobs() {
+export default function AppliedJobsPage() {
   const [appliedJobs,setAppliedJobs]=useState('');
   const token=localStorage.getItem('Token');
   const [joblength,setJobLength]=useState(0);
@@ -19,12 +20,9 @@ export default function Appliedjobs() {
       .then((response) => {
         const jobData = response.data.data || [];
         setJobLength(response.data.data.length)
-        console.log(jobData); 
         setAppliedJobs(jobData); 
-        // console.log(appliedJobs); //draft1
-        // toast.success('Applied jobs fetched');
       })
-      .catch((error) => toast.error("Error fetching user data:", error));
+      .catch((error) => console.error("Error fetching user applied jobs data:", error));
   },[]);
 
   return (
@@ -48,21 +46,21 @@ export default function Appliedjobs() {
                 <div className="all-details">
                   <span className="gapfortiles">
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/company.svg"
+                      src={`${assetUrl}/front/images/icons/company.svg`}
                       alt="company"
                     />
                     <span>{appliedJob.job.company_info.name || "Company Name"}</span>
                   </span>
                   <span className="gapfortiles">
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/time-period.svg"
+                      src={`${assetUrl}/front/images/icons/time-period.svg`}
                       alt="TIme"
                     />
                     {appliedJob.job.experience_min} - {appliedJob.job.experience_max || "Max Experience"} Years
                   </span>
                   <span className="gapfortiles">
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg"
+                      src={`${assetUrl}/front/images/icons/gross-sale.svg`}
                       alt="Sale"
                     />
                     {appliedJob.job.salary_min ? `${(appliedJob.job.salary_min / 1000).toFixed(0)}K` : "Salary"} - 
@@ -71,14 +69,14 @@ export default function Appliedjobs() {
                   </span>
                   <span className="gapfortiles">
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/job-type.svg"
+                      src={`${assetUrl}/front/images/icons/job-type.svg`}
                       alt="Job Type"
                     />
                     {appliedJob.job.job_types.join(', ') || "Job type"}
                   </span>
                   <span className="gapfortiles">
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/location.svg"
+                      src={`${assetUrl}/front/images/icons/location.svg`}
                       alt="Job Location"
                     />
                     {appliedJob.job.location || "Job Location"}

@@ -1,0 +1,1 @@
+export const assetUrl = process.env.REACT_APP_API_ASSET_URL

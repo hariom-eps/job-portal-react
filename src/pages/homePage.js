@@ -10,14 +10,16 @@
   import 'owl.carousel/dist/assets/owl.theme.default.css';
   import "react-loading-skeleton/dist/skeleton.css";
 
-  import Signup from "../components/signup";
+  import Signup from "../components/signupDisplay";
   import Footer from "../components/footer";
-  import Newsletter from "../components/newsletter";
-  import NavbarTop from "../components/navbar";
+  import Newsletter from "../components/newsLetterDisplay";
+  import NavbarTop from "../components/homeNavbar";
   import { toast } from "react-hot-toast";
-  import { apiUrl } from "../helper";
-  import Category from "../components/category";
+  import Category from "../components/jobCategories";
   import { useNavigate } from "react-router-dom";
+
+  import { apiUrl } from "../helperURL";
+  import { assetUrl } from "../helperASSET";
 
   export default function Home() {
 
@@ -31,9 +33,7 @@
     const token = localStorage.getItem("Token");
     const userId = JSON.parse(localStorage.getItem("User"))?.id;
     const navigate=useNavigate();
-    console.log("User ID:", userId);
 
-    console.log("user ID : ",userId);
     const [filters, setFilters] = useState({ 
       keyword: "",
       jobType: "",
@@ -85,19 +85,10 @@
       setSelectedJobType("");
       setShowFilteredJobs(false);
     };
-
-    // axios.get("http://ls.bizbybot.com/api/jobs", {
-    // headers: {
-    //     Authorization: `Bearer ${localStorage.getItem("Token")}`
-    // }
-    // })
-    // .then(response => console.log(response.data))
-    // .catch(error => toast.error("Error:", error));
       
     useEffect(() => {   
       axios.get(`${apiUrl}/api/jobs/latest`)
         .then(response => {
-          console.log(response.data);
           setJobs(response.data.data || []);  
           setJobLength(response.data.data.length || 0); 
         })
@@ -113,7 +104,6 @@
         .then((response) => {
           if (response.data && response.data.data) {
             setJobTypes(response.data.data);
-            console.log(jobTypes)
             setErrorMessage(null);  
           } else {
             console.error("Unexpected response format:", response);
@@ -131,9 +121,6 @@
         });
     }, []);
 
-    console.log('Number of Jobs: ',joblength)
-    console.log("Job Created By:", jobs.created_by, "User ID:", userId);
-
     useEffect(() => {
       if (token) {
           axios.get(`${apiUrl}/api/jobs/applies`, {
@@ -142,18 +129,16 @@
               .then((response) => {
                   const jobData = response.data.data || [];
                   setAppliedJobs(jobData);
-                  console.log('Applied jobs ID', jobData.map(job => job.job_id));
               })
               .catch((error) => {
                   console.log(error);
               });
       }
-  }, [token]);
+  }, []);
 
   const isJobApplied = (jobId) => {
     return appliedJobs.some((appliedJob) => appliedJob.job_id === jobId);
 };
-  console.log(isJobApplied);
   
     return (
       <div>
@@ -164,7 +149,7 @@
           <img src={Herobgone} alt="Hero Image" className="img-fluid hero-bg-image" />
           <div className="container hero-content-area">
             <h1 className="hero-head">Matching talent with opportunity</h1>
-            <p className="hero-para" onClick={()=>navigate('/temp')}>
+            <p className="hero-para">
               Discover and apply for the latest job opportunities
             </p>
           </div>
@@ -211,7 +196,7 @@
                       onClick={handleClick}/>
                     <i onClick={handleClick}>
                       <img
-                        src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
+                        src={`${assetUrl}/front/images/icons/select-drop-arrow.svg`}
                         alt="Chevron"
                       />
                     </i>
@@ -291,31 +276,31 @@
                     {jobs.map((job) => (
                       <div key={job.id} className="each-job-card">
                         <h3>
-                          <a href={`http://ls.bizbybot.com/jobs/${job.id}`}>{job.title}</a>
+                          <a href={`${apiUrl}/jobs/${job.id}`}>{job.title}</a>
                         </h3>
                         <ul>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/company.svg" className="img-fluid" alt="Company Name" />
+                            <img src={`${assetUrl}/front/images/icons/company.svg`} className="img-fluid" alt="Company Name" />
                             {job.company_info?.name || "N/A"}
                           </li>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/time-period.svg" className="img-fluid" alt="Year" />
+                            <img src={`${assetUrl}/front/images/icons/time-period.svg`} className="img-fluid" alt="Year" />
                             {job.experience_min && job.experience_max
                               ? `${job.experience_min} - ${job.experience_max} Years`
                               : "Experience Not Specified"}
                           </li>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg" className="img-fluid" alt="Sale" />
+                            <img src={`${assetUrl}/front/images/icons/gross-sale.svg`} className="img-fluid" alt="Sale" />
                             {job.salary_min && job.salary_max
                               ? `${(job.salary_min / 1000).toFixed(0)}K - ${(job.salary_max / 1000).toFixed(0)}K ${job.salary_currency} per year`
                               : "Salary Not Specified"}
                           </li>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/job-type.svg" className="img-fluid" alt="Job Type" />
+                            <img src={`${assetUrl}/front/images/icons/job-type.svg`} className="img-fluid" alt="Job Type" />
                             {job.job_types || "Not Specified"}
                           </li>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/location.svg" className="img-fluid" alt="Location" />
+                            <img src={`${assetUrl}/front/images/icons/location.svg`} className="img-fluid" alt="Location" />
                             {job.location || "Not Specified"}
                           </li>
                         </ul>
@@ -381,31 +366,31 @@
                     {filteredJobs.map((job) => (
                       <div key={job.id} className="each-job-card">
                         <h3>
-                          <a href={`http://ls.bizbybot.com/jobs/${job.id}`}>{job.title}</a>
+                          <a href={`${apiUrl}/jobs/${job.id}`}>{job.title}</a>
                         </h3>
                         <ul>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/company.svg" className="img-fluid" alt="Company Name" />
+                            <img src={`${assetUrl}/front/images/icons/company.svg`} className="img-fluid" alt="Company Name" />
                             {job.company_info?.name || "N/A"}
                           </li>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/time-period.svg" className="img-fluid" alt="Year" />
+                            <img src={`${assetUrl}/front/images/icons/time-period.svg`} className="img-fluid" alt="Year" />
                             {job.experience_min && job.experience_max
                               ? `${job.experience_min}-${job.experience_max} Years`
                               : "Experience Not Specified"}
                           </li>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg" className="img-fluid" alt="Sale" />
+                            <img src={`${assetUrl}/front/images/icons/gross-sale.svg`} className="img-fluid" alt="Sale" />
                             {job.salary_min && job.salary_max
                               ? `${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()} ${job.salary_currency} per year`
                               : "Salary Not Specified"}
                           </li>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/job-type.svg" className="img-fluid" alt="Job Type" />
+                            <img src={`${assetUrl}/front/images/icons/job-type.svg`} className="img-fluid" alt="Job Type" />
                             {job.job_types || "Not Specified"}
                           </li>
                           <li>
-                            <img src="http://ls.bizbybot.com/front/images/icons/location.svg" className="img-fluid" alt="Location" />
+                            <img src={`${assetUrl}/front/images/icons/location.svg`} className="img-fluid" alt="Location" />
                             {job.location || "Not Specified"}
                           </li>
                         </ul>

@@ -3,24 +3,24 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-import Navbar from "../components/navbar";
-import Footer from '../components/footer';
-import { apiUrl } from "../helper";
+import Navbar from "../components/homeNavbar";
+import Footer from "../components/footer";
+import { apiUrl } from "../helperURL";
+import { assetUrl } from "../helperASSET";
 
 const loginUrl = `${apiUrl}/api/auth/register`;
 
 export default function Signuppage() {
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({}); 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   // validate inputs
-  const validateForm = () => {  
+  const validateForm = () => {
     let errors = {};
-    
+
     if (!name.trim()) {
       errors.name = "Name is required";
     }
@@ -46,11 +46,12 @@ export default function Signuppage() {
 
     if (!validateForm()) return; //ico no val
 
-    axios.post(loginUrl, { first_name: name, email, password })
+    axios
+      .post(loginUrl, { first_name: name, email, password })
       .then((response) => {
         if (response.status === 200) {
-          toast.success('Registration successful!');
-          setTimeout(() => navigate('/jobs'), 2000);
+          toast.success("Registration successful!");
+          setTimeout(() => navigate("/jobs"), 2000);
         }
       })
       .catch((error) => {
@@ -64,31 +65,65 @@ export default function Signuppage() {
   return (
     <div>
       <Navbar />
-      <div className="fade auth-modal-main-div show" id="signupModal" tabIndex="-1" role="dialog" style={{ display: "block" }}>
+      <div
+        className="fade auth-modal-main-div show"
+        id="signupModal"
+        tabIndex="-1"
+        role="dialog"
+        style={{ display: "block" }}
+      >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content rounded-0">
             <div className="modal-body">
               <form className="auth-main-inputes-div" onSubmit={handleSubmit}>
                 <p className="main-heading">Sign Up</p>
-                <p className="sub-heading">Let’s get started with awesome energy!</p>
+                <p className="sub-heading">
+                  Let’s get started with awesome energy!
+                </p>
 
                 <div className="each-animatted-input-div">
-                  <input type="text" id="fullName" name="first_name" placeholder="Name" 
-                    onChange={(e) => setName(e.target.value)} />
-                  <span className="text-danger error-text" id="name-error">{errors.name}</span>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="first_name"
+                    placeholder="Name"
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <span className="text-danger error-text" id="name-error">
+                    {errors.name}
+                  </span>
                 </div>
 
                 <div className="each-animatted-input-div">
-                  <input type="email" id="signup_email" name="email" placeholder="Email" 
-                    onChange={(e) => setEmail(e.target.value)} />
-                  <span className="text-danger error-text" id="email-error">{errors.email}</span>
+                  <input
+                    type="email"
+                    id="signup_email"
+                    name="email"
+                    placeholder="Email"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <span className="text-danger error-text" id="email-error">
+                    {errors.email}
+                  </span>
                 </div>
 
                 <div className="each-animatted-input-div">
-                  <input type="password" id="signup_password" className="pe-5" name="password" placeholder="Password" 
-                    onChange={(e) => setPassword(e.target.value)} />
-                  <img src="http://ls.bizbybot.com/front/images/icons/eye-icon.svg" alt="open eye" className="inputEyeIcon" />
-                  <span className="text-danger error-text" id="password-error">{errors.password}</span>
+                  <input
+                    type="password"
+                    id="signup_password"
+                    className="pe-5"
+                    name="password"
+                    placeholder="Password"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <img
+                    src={`${assetUrl}/front/images/icons/eye-icon.svg`}
+                    alt="open eye"
+                    className="inputEyeIcon"
+                  />
+                  <span className="text-danger error-text" id="password-error">
+                    {errors.password}
+                  </span>
                 </div>
 
                 <button type="submit" className="btn submit-btn">
@@ -99,21 +134,36 @@ export default function Signuppage() {
                   <hr /> Or <hr />
                 </div>
 
-                <button className="btn google-btn" onClick={() => navigate("/google-log-in")}>
-                  <img src="http://ls.bizbybot.com/front/images/icons/google-icon.svg" alt="Google" />
+                <button
+                  className="btn google-btn"
+                  onClick={() => navigate("/google-log-in")}
+                >
+                  <img
+                    src={`${assetUrl}/front/images/icons/google-icon.svg`}
+                    alt="Google"
+                  />
                   Sign Up with Google
                 </button>
               </form>
 
               <p className="agreement-para">
-                By signing up, you agree to our <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>.
+                By signing up, you agree to our{" "}
+                <a href="#">Terms & Conditions</a> and{" "}
+                <a href="#">Privacy Policy</a>.
               </p>
 
-              <button type="submit" className="btn profile-back-btn mx-auto" style={{ marginTop: '25px' }} onClick={() => navigate('/jobs')} >
-                <img src="http://ls.bizbybot.com/front/images/icons/back-arrow.svg" alt="Back" />
+              <button
+                type="submit"
+                className="btn profile-back-btn mx-auto"
+                style={{ marginTop: "25px" }}
+                onClick={() => navigate("/jobs")}
+              >
+                <img
+                  src={`${assetUrl}/front/images/icons/back-arrow.svg`}
+                  alt="Back"
+                />
                 Home
               </button>
-
             </div>
           </div>
         </div>

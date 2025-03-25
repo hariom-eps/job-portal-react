@@ -1,8 +1,8 @@
 import React from "react";
 
-import Navbar from "../../components/navbar";
+import Navbar from "../../components/homeNavbar";
 import Footer from "../../components/footer";
-import Newsletter from "../../components/newsletter";
+import Newsletter from "../../components/newsLetterDisplay";
 import "../../css/style.css";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router";
@@ -11,7 +11,8 @@ import axios from "axios";
 import { InputMask } from "@react-input/mask";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { apiUrl } from "../../helper";
+import { apiUrl } from "../../helperURL";
+import { assetUrl } from "../../helperASSET";
 
 export default function Applyjob() {
   const { jobID } = useParams();
@@ -30,8 +31,6 @@ export default function Applyjob() {
   const username = JSON.parse(localStorage.getItem("User"))?.first_name;
   const email = JSON.parse(localStorage.getItem("User"))?.email;
   const token = localStorage.getItem("Token");
-  console.log("User Name: ", username);
-  console.log("User Email: ", email);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -78,7 +77,6 @@ export default function Applyjob() {
         const jobData = response.data.data || [];
         setJobs(jobData);
         const createdBy = jobData.created_by || "Unknown";
-        console.log("Created by:", createdBy);
       })
       .catch((error) => {
         toast.error(error);
@@ -116,7 +114,6 @@ export default function Applyjob() {
             `Unexpected response: ${response.status} - ${response.statusText}`
           );
         }
-        console.log("Server Response:", response.data);
       })
       .catch((error) => {
         toast.error(
@@ -131,7 +128,7 @@ export default function Applyjob() {
       <Navbar />
       <section className="main-hero-section2">
         <img
-          src="http://ls.bizbybot.com/front/images/hero-image5.png"
+          src={`${assetUrl}/front/images/hero-image5.png`}
           alt="Hero Image"
           className="img-fluid hero-bg-image"
         />
@@ -162,7 +159,7 @@ export default function Applyjob() {
                 <div className="all-details">
                   <span>
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/company.svg"
+                      src={`${assetUrl}/front/images/icons/company.svg`}
                       alt="company"
                     />
                     {jobs?.company?.name ? (
@@ -173,7 +170,7 @@ export default function Applyjob() {
                   </span>
                   <span>
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/time-period.svg"
+                      src={`${assetUrl}/front/images/icons/time-period.svg`}
                       alt="TIme"
                     />
                     {jobs?.experience_min && jobs?.experience_max ? (
@@ -185,7 +182,7 @@ export default function Applyjob() {
                   </span>
                   <span>
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/access-time.svg"
+                      src={`${assetUrl}/front/images/icons/access-time.svg`}
                       alt="Job Type"
                     />{" "}
                     {jobs?.job_types ? (
@@ -196,7 +193,7 @@ export default function Applyjob() {
                   </span>
                   <span>
                     <img
-                      src="http://ls.bizbybot.com/front/images/icons/gross-sale.svg"
+                      src={`${assetUrl}/front/images/icons/gross-sale.svg`}
                       alt="Sale"
                     />
                     {jobs ? (

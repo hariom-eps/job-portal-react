@@ -1,31 +1,27 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 
 import RequireAuth from './requireauth';
 import RequireAuthLogin from './requireauthlogin';
 
-import Home from './pages/home';
-import Events from './pages/events';
-import Courses from './pages/courses';
-import Login from './pages/loginpage';
-import Signup from './pages/signuppage';
-import ResetPassword from './pages/resetpassword';
-import Postjob from './pages/jobrelated/postjob';
-import Postedjob from './pages/jobrelated/postedjob';
-import Profile from './pages/profile';
-import JobDescription from './pages/jobrelated/jobdescription';
-import ForgotPassword from './pages/forgotpasswordpage'
-import Appliedjobs from './pages/jobrelated/appliedjobs';
-import Appliedsuccessfully from './pages/jobrelated/appliedsuccessfully';
-import Notfound from './pages/notfound';
-import Applyjob from './pages/jobrelated/applyjob';
-import UpdateJob from './pages/jobrelated/updatejob';
-import Tempnavbar from './components/tempnavbar';
-import TopCategory from './pages/jobrelated/topcategory'
+import Home from './pages/homePage';
+import Login from './pages/loginPage';
+import Signup from './pages/signupPage';
+import ResetPassword from './pages/resetPasswordPage';
+import Postjob from './pages/jobRelatedPages/postAJobPage';
+import Postedjob from './pages/jobRelatedPages/jobsPostedPage';
+import Profile from './pages/profilePage';
+import JobDescription from './pages/jobRelatedPages/jobDescriptionPage';
+import ForgotPassword from './pages/forgotPasswordPage'
+import Appliedjobs from './pages/jobRelatedPages/jobsAppliedPage';
+import Appliedsuccessfully from './pages/jobRelatedPages/appliedSuccessfullyPage';
+import Notfound from './pages/notFoundPage';
+import Applyjob from './pages/jobRelatedPages/jobApplyPage';
+import UpdateJob from './pages/jobRelatedPages/jobUpdatePage';
+import TopCategory from './pages/jobRelatedPages/jobTopCategory'
 import Scrolltotop from './Scrolltotop';
-import TempPage from './pages/temppage'
 
 function App() {
   return (
@@ -51,8 +47,6 @@ function App() {
           <Route path='/jobs/top-categories/:categoryID' element={<TopCategory/>}/>
 
           <Route path='*' element={<Notfound/>}/>
-          <Route path='/temp' element={<TempPage/>}/>
-
         </Routes>
        </BrowserRouter>
     </div>

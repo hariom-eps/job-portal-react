@@ -1,49 +1,51 @@
-import axios, { Axios } from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useParams , useNavigate } from 'react-router'
-import { apiUrl } from '../../helper';
-import { toast } from 'react-hot-toast';
+import axios, { Axios } from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
+import { apiUrl } from "../../helperURL";
+import { toast } from "react-hot-toast";
 import $ from "jquery";
 import "summernote/dist/summernote-lite.css";
 import "summernote/dist/summernote-lite.js";
 import { InputMask } from "@react-input/mask";
 
-import Navbar from "../../components/navbar";
-import Newsletter from "../../components/newsletter";
-import UserFooter from "../../components/userfooter";
-import Jobheader from "../../components/jobheader";
+import Navbar from "../../components/homeNavbar";
+import Newsletter from "../../components/newsLetterDisplay";
+import UserFooter from "../../components/oneLineFooter";
+import Jobheader from "../../components/jobNavbar";
+import { assetUrl } from "../../helperASSET";
 
 export default function Updatejob() {
-    const {jobID} = useParams();
-    const [jobs,setJobs] = useState();
-    const [company,setCompany] = useState();
-    const token = localStorage.getItem("Token")
-    console.log(jobID);
+  const { jobID } = useParams();
+  const [jobs, setJobs] = useState();
+  const [company, setCompany] = useState();
+  const token = localStorage.getItem("Token");
 
-    useEffect(()=>{
-        axios.get(`${apiUrl}/api/jobs/${jobID}/view`,{
-            headers:{Authorization: `Bearer ${token}`}})
-        .then((response)=>{ setJobs(response.data.data);
-            console.log('API Data',response.data.data)
-        })
-        .catch((error) => toast.error("Error fetching user data:", error));
-    },[jobID]);
+  useEffect(() => {
+    axios
+      .get(`${apiUrl}/api/jobs/${jobID}/view`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        setJobs(response.data.data);
+      })
+      .catch((error) => toast.error("Error fetching user data:", error));
+  }, [jobID]);
 
-    const [industryTypes, setIndustryTypes] = useState([]);
+  const [industryTypes, setIndustryTypes] = useState([]);
   const [jobSkills, setJobSkills] = useState([]);
   const [jobTypes, setJobTypes] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [workplacetypes, setWorkplaceTypes] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const navigate = useNavigate();
-  // Company 
+  // Company
   const [activeTab, setActiveTab] = useState("existing");
   const [companyData, setCompanyData] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   // Error
   const [errors, setErrors] = useState({});
-  // Form 
+  // Form
   const [formData, setFormData] = useState({
     title: "",
     location: "",
@@ -103,20 +105,20 @@ export default function Updatejob() {
     setFormData({ ...formData, job_category: category.id });
     setActiveDropdown(null);
   };
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
+      ...prevFormData,
+      [name]: value,
     }));
 
     setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: !value.trim() ? `${e.target.placeholder} is required.` : "",
+      ...prevErrors,
+      [name]: !value.trim() ? `${e.target.placeholder} is required.` : "",
     }));
-};
+  };
 
   useEffect(() => {
     axios
@@ -170,232 +172,253 @@ export default function Updatejob() {
         toast.error("Error fetching workplace types.");
       });
 
-      axios.get(`${apiUrl}/api/company`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` }
-    })
-        .then((response) => {
-            const companyData = response.data.data;
-            setCompanies(companyData);
-            console.log("Company Data:", companyData);
-        })
-        .catch((error) => {
-            console.error("Error fetching company data:", error);
-            toast.error("Error fetching company data");
-        });
+    axios
+      .get(`${apiUrl}/api/company`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` },
+      })
+      .then((response) => {
+        const companyData = response.data.data;
+        setCompanies(companyData);
+      })
+      .catch((error) => {
+        console.error("Error fetching company data:", error);
+        toast.error("Error fetching company data");
+      });
   }, []);
 
   useEffect(() => {
     if (jobs) {
-        $("#jobDescriptionEditor").summernote('code', jobs.descriptions || '');
-        $("#jobQualificationEditor").summernote('code', jobs.qualifications || '');
-        $("#aboutCompanyEditor").summernote('code', jobs.company_about || '');
+      $("#jobDescriptionEditor").summernote("code", jobs.descriptions || "");
+      $("#jobQualificationEditor").summernote(
+        "code",
+        jobs.qualifications || ""
+      );
+      $("#aboutCompanyEditor").summernote("code", jobs.company_about || "");
     }
-}, [jobs]);  
+  }, [jobs]);
 
-useEffect(() => {
+  useEffect(() => {
     if (jobs) {
-        $("#jobDescriptionEditor").summernote('code', jobs.descriptions || '');
-        $("#jobQualificationEditor").summernote('code', jobs.qualifications || '');
-        $("#aboutCompanyEditor").summernote('code', jobs.company_about || '');
+      $("#jobDescriptionEditor").summernote("code", jobs.descriptions || "");
+      $("#jobQualificationEditor").summernote(
+        "code",
+        jobs.qualifications || ""
+      );
+      $("#aboutCompanyEditor").summernote("code", jobs.company_about || "");
     }
-}, [jobs]);  
+  }, [jobs]);
 
-useEffect(() => {
+  useEffect(() => {
     $("#jobDescriptionEditor").summernote({
-        placeholder: "Type job description here...",
-        tabsize: 2,
-        height: 200,
-        callbacks: {
-            onChange: function (contents) {
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    descriptions: contents,
-                }));
+      placeholder: "Type job description here...",
+      tabsize: 2,
+      height: 200,
+      callbacks: {
+        onChange: function (contents) {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            descriptions: contents,
+          }));
 
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    description: contents.trim() && contents !== "<p><br></p>" ? "" : "Job Description is required.",
-                }));
-            },
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            description:
+              contents.trim() && contents !== "<p><br></p>"
+                ? ""
+                : "Job Description is required.",
+          }));
         },
+      },
     });
 
     $("#jobQualificationEditor").summernote({
-        placeholder: "Type job qualifications here...",
-        tabsize: 2,
-        height: 200,
-        callbacks: {
-            onChange: function (contents) {
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    qualifications: contents,
-                }));
+      placeholder: "Type job qualifications here...",
+      tabsize: 2,
+      height: 200,
+      callbacks: {
+        onChange: function (contents) {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            qualifications: contents,
+          }));
 
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    qualifications: contents.trim() && contents !== "<p><br></p>" ? "" : "Job Qualifications are required.",
-                }));
-            },
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            qualifications:
+              contents.trim() && contents !== "<p><br></p>"
+                ? ""
+                : "Job Qualifications are required.",
+          }));
         },
+      },
     });
 
     $("#aboutCompanyEditor").summernote({
-        placeholder: "Something about the company...",
-        tabsize: 2,
-        height: 200,
-        callbacks: {
-            onChange: function (contents) {
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    company_about: contents,
-                }));
+      placeholder: "Something about the company...",
+      tabsize: 2,
+      height: 200,
+      callbacks: {
+        onChange: function (contents) {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            company_about: contents,
+          }));
 
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    aboutCompany: contents.trim() && contents !== "<p><br></p>" ? "" : "Company details are required.",
-                }));
-            },
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            aboutCompany:
+              contents.trim() && contents !== "<p><br></p>"
+                ? ""
+                : "Company details are required.",
+          }));
         },
+      },
     });
 
     return () => {
-        $("#jobDescriptionEditor").summernote("destroy");
-        $("#jobQualificationEditor").summernote("destroy");
-        $("#aboutCompanyEditor").summernote("destroy");
+      $("#jobDescriptionEditor").summernote("destroy");
+      $("#jobQualificationEditor").summernote("destroy");
+      $("#aboutCompanyEditor").summernote("destroy");
     };
-}, []);
-  
+  }, []);
+
   const handleCompanySelect = (companyId) => {
-    setSelectedCompanyId(companyId); 
-    setFormData(prev => ({
-        ...prev,
-        company_id: companyId,
-        name: companies.find(company => company.id === companyId)?.name || "",
-        website: companies.find(company => company.id === companyId)?.website || "",
+    setSelectedCompanyId(companyId);
+    setFormData((prev) => ({
+      ...prev,
+      company_id: companyId,
+      name: companies.find((company) => company.id === companyId)?.name || "",
+      website:
+        companies.find((company) => company.id === companyId)?.website || "",
     }));
-};
-useEffect(() => {
-    if (company && company.id) {  
-        axios.get(`${apiUrl}/api/company/${company.id}/view`, { 
-            headers: { Authorization: `Bearer ${token}` }
+  };
+  useEffect(() => {
+    if (company && company.id) {
+      axios
+        .get(`${apiUrl}/api/company/${company.id}/view`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-            setCompany(response.data.data);
-            console.log('API Data', response.data.data);
+          setCompany(response.data.data);
         })
         .catch((error) => toast.error("Error fetching user data:", error));
     }
-}, [company]);  
+  }, [company]);
 
-const handleExperienceChange = (e) => {
-  const { name, value } = e.target;
-  let numValue = Number(value);
+  const handleExperienceChange = (e) => {
+    const { name, value } = e.target;
+    let numValue = Number(value);
 
-  if (name === "experience_max" && numValue < formData.experience_min) {
-    return; 
-  }
-
-  setFormData((prevData) => ({
-    ...prevData,
-    [name]: numValue,
-  }));
-
-  setErrors((prevErrors) => ({
-    ...prevErrors,
-    [name]: "",
-  }));
-};
-const handleSalaryChange = (e) => {
-  const { name, value } = e.target;
-  let numValue = Number(value);
-
-  if (name === "salary_max" && numValue < formData.salary_min) {
-    return; 
-  }
-
-  setFormData((prevData) => ({
-    ...prevData,
-    [name]: numValue,
-  }));
-
-  setErrors((prevErrors) => ({
-    ...prevErrors,
-    [name]: "",
-  }));
-};
-
-const handleCurrencySelect = (currency) => {
-  setFormData((prevData) => ({
-    ...prevData,
-    salary_currency: currency,
-  }));
-
-  setErrors((prevErrors) => ({
-    ...prevErrors,
-    salary_currency: "",
-  }));
-
-  setActiveDropdown(null);
-};
-
-useEffect(() => {
-    if(jobs){
-      setFormData({
-          title: jobs?.title || "",
-          location: jobs?.location || "",
-          descriptions: jobs?.descriptions || "",
-          job_category: jobs?.job_category || null,
-          skills: jobs?.skills || [],
-          industry_types: jobs?.industry_types || [],
-          job_types: jobs?.job_types || [],
-          workplace_types: jobs?.workplace_types || [],
-          experience_min: jobs?.experience_min || "",
-          experience_max: jobs?.experience_max || "",
-          salary_min: jobs?.salary_min || "",
-          salary_max: jobs?.salary_max || "",
-          qualifications: jobs?.qualifications || "",
-          name: jobs?.name || "",
-          website: jobs?.website || "",
-          company_about: jobs?.company_about || "",
-          contact_person: jobs?.contact_person || "",
-          contact_email: jobs?.contact_email || "",
-          phone: jobs?.phone || "",
-          address_line_1: jobs?.address_line_1 || "",
-          city: jobs?.city || "",
-          country: jobs?.country || "",
-          pincode: jobs?.pincode || "",
-          landmark: jobs?.landmark || "",
-          state: jobs?.state || "",
-          company_photos: jobs?.company_photos || [],
-          company_id: jobs?.company_id || "0",
-          contract_year: jobs?.contract_year || "2",
-          salary_currency: jobs?.salary_currency || null,
-      });
-      const foundCompany = companies.find((company) => company.id === jobs.company_id);
-
-            if (foundCompany) {
-                setSelectedCompanyId(foundCompany.id);
-            } else {
-                setSelectedCompanyId(null);
-            }
+    if (name === "experience_max" && numValue < formData.experience_min) {
+      return;
     }
-   }, [jobs]);
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-  let newErrors = {};
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: numValue,
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+  const handleSalaryChange = (e) => {
+    const { name, value } = e.target;
+    let numValue = Number(value);
+
+    if (name === "salary_max" && numValue < formData.salary_min) {
+      return;
+    }
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: numValue,
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
+  const handleCurrencySelect = (currency) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      salary_currency: currency,
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      salary_currency: "",
+    }));
+
+    setActiveDropdown(null);
+  };
+
+  useEffect(() => {
+    if (jobs) {
+      setFormData({
+        title: jobs?.title || "",
+        location: jobs?.location || "",
+        descriptions: jobs?.descriptions || "",
+        job_category: jobs?.job_category || null,
+        skills: jobs?.skills || [],
+        industry_types: jobs?.industry_types || [],
+        job_types: jobs?.job_types || [],
+        workplace_types: jobs?.workplace_types || [],
+        experience_min: jobs?.experience_min || "",
+        experience_max: jobs?.experience_max || "",
+        salary_min: jobs?.salary_min || "",
+        salary_max: jobs?.salary_max || "",
+        qualifications: jobs?.qualifications || "",
+        name: jobs?.name || "",
+        website: jobs?.website || "",
+        company_about: jobs?.company_about || "",
+        contact_person: jobs?.contact_person || "",
+        contact_email: jobs?.contact_email || "",
+        phone: jobs?.phone || "",
+        address_line_1: jobs?.address_line_1 || "",
+        city: jobs?.city || "",
+        country: jobs?.country || "",
+        pincode: jobs?.pincode || "",
+        landmark: jobs?.landmark || "",
+        state: jobs?.state || "",
+        company_photos: jobs?.company_photos || [],
+        company_id: jobs?.company_id || "0",
+        contract_year: jobs?.contract_year || "2",
+        salary_currency: jobs?.salary_currency || null,
+      });
+      const foundCompany = companies.find(
+        (company) => company.id === jobs.company_id
+      );
+
+      if (foundCompany) {
+        setSelectedCompanyId(foundCompany.id);
+      } else {
+        setSelectedCompanyId(null);
+      }
+    }
+  }, [jobs]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let newErrors = {};
 
     if (!formData.title.trim()) {
-        newErrors.title = "Job Title is required.";
+      newErrors.title = "Job Title is required.";
     }
     if (!formData.location?.trim()) {
       newErrors.location = "Job Location is required.";
     }
-    if (!formData.descriptions?.trim() || formData.descriptions === "<p><br></p>") {
+    if (
+      !formData.descriptions?.trim() ||
+      formData.descriptions === "<p><br></p>"
+    ) {
       newErrors.descriptions = "Job Description is required.";
     }
-    if (!formData.job_category){
-      newErrors.job_category="Job Category is required.";
+    if (!formData.job_category) {
+      newErrors.job_category = "Job Category is required.";
     }
     if (!formData.skills || formData.skills.length === 0) {
       newErrors.skills = "At least one skill is required.";
@@ -426,9 +449,13 @@ const handleSubmit = (e) => {
     if (!formData.salary_max) {
       newErrors.salary_max = "Maximum salary is required.";
     } else if (formData.salary_max < formData.salary_min) {
-      newErrors.salary_max = "Max salary must be greater than or equal to Min salary.";
+      newErrors.salary_max =
+        "Max salary must be greater than or equal to Min salary.";
     }
-    if (!formData.qualifications?.trim() || formData.qualifications === "<p><br></p>") {
+    if (
+      !formData.qualifications?.trim() ||
+      formData.qualifications === "<p><br></p>"
+    ) {
       newErrors.qualifications = "Qualifications are required.";
     }
     if (!selectedCompanyId) {
@@ -437,67 +464,70 @@ const handleSubmit = (e) => {
         company: "Please select a company.",
       }));
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return; 
-    }
-
-  const description = $("#jobDescriptionEditor").summernote("code");
-  const qualifications = $("#jobQualificationEditor").summernote("code");
-  const companyAbout = $("#aboutCompanyEditor").summernote("code");
-
-  if (!qualifications.trim()) {
-    newErrors.qualifications = "Qualifications are required.";
-  }
-
-  const formatArrayToString = (arr) => (Array.isArray(arr) ? arr.join(',') : '');
-  const formattedData = {
-    ...formData,
-    skills: formatArrayToString(formData.skills),
-    industry_types: formatArrayToString(formData.industry_types),
-    job_types: formatArrayToString(formData.job_types),
-    workplace_types: formatArrayToString(formData.workplace_types),
-};
-
-  const postData = {
-    ...formattedData,
-    descriptions: description,
-    qualifications: qualifications,
-    company_about: companyAbout,
-  };
-  
-  if (activeTab === "existing") {
-    if (!selectedCompanyId) {
-      console.log("Please select a company.");
+      setErrors(newErrors);
       return;
     }
 
-    axios
-      .post(
-        `${apiUrl}/api/jobs/${jobID}/edit`,
-        { ...postData, company_id: selectedCompanyId },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` } }
-      )
-      .then((jobResponse) => {
-        toast.success("Job Updated successfully!");
-        console.log("Job Updated:", jobResponse.data);
-        navigate("/posted-job")
-      })
-      .catch((error) => {
-        if (error.response) {
-          toast.error(error.response.data.message);
-        } else {
-          toast.error("An error occurred.");
-        }
-      });
-  } 
-};
+    const description = $("#jobDescriptionEditor").summernote("code");
+    const qualifications = $("#jobQualificationEditor").summernote("code");
+    const companyAbout = $("#aboutCompanyEditor").summernote("code");
+
+    if (!qualifications.trim()) {
+      newErrors.qualifications = "Qualifications are required.";
+    }
+
+    const formatArrayToString = (arr) =>
+      Array.isArray(arr) ? arr.join(",") : "";
+    const formattedData = {
+      ...formData,
+      skills: formatArrayToString(formData.skills),
+      industry_types: formatArrayToString(formData.industry_types),
+      job_types: formatArrayToString(formData.job_types),
+      workplace_types: formatArrayToString(formData.workplace_types),
+    };
+
+    const postData = {
+      ...formattedData,
+      descriptions: description,
+      qualifications: qualifications,
+      company_about: companyAbout,
+    };
+
+    if (activeTab === "existing") {
+      if (!selectedCompanyId) {
+        return;
+      }
+
+      axios
+        .post(
+          `${apiUrl}/api/jobs/${jobID}/edit`,
+          { ...postData, company_id: selectedCompanyId },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            },
+          }
+        )
+        .then((jobResponse) => {
+          toast.success("Job Updated successfully!");
+          navigate("/posted-job");
+        })
+        .catch((error) => {
+          if (error.response) {
+            toast.error(error.response.data.message);
+          } else {
+            toast.error("An error occurred.");
+          }
+        });
+    }
+  };
 
   return (
     <div>
-        <Navbar/>
-        <section className="job-post-main-section">
+      <Navbar />
+      <section className="job-post-main-section">
         <div className="container">
           <Jobheader />
           <div className="row">
@@ -507,10 +537,7 @@ const handleSubmit = (e) => {
               onSubmit={handleSubmit}
               encType="multipart/form-data"
             >
-              <input
-                type="hidden"
-                name="_token"
-                autoComplete="off"/>
+              <input type="hidden" name="_token" autoComplete="off" />
               <p className="post-pages-heading">Job Information</p>
               <div className="row pe-lg-5">
                 {/* Job Title  */}
@@ -522,11 +549,11 @@ const handleSubmit = (e) => {
                       name="title"
                       placeholder="Job Title"
                       value={formData.title}
-                      onChange={handleChange}/>
-                    <span
-                      className="text-danger error-text"
-                      id="title-error"
-                    >{errors.title}</span>
+                      onChange={handleChange}
+                    />
+                    <span className="text-danger error-text" id="title-error">
+                      {errors.title}
+                    </span>
                   </div>
                 </div>
 
@@ -538,12 +565,15 @@ const handleSubmit = (e) => {
                       id="jobLocation"
                       name="location"
                       placeholder="Job Location"
-                      value={formData.location}  
-                      onChange={handleChange}/>
+                      value={formData.location}
+                      onChange={handleChange}
+                    />
                     <span
                       className="text-danger error-text"
                       id="location-error"
-                    >{errors.location}</span>
+                    >
+                      {errors.location}
+                    </span>
                   </div>
                 </div>
 
@@ -551,7 +581,11 @@ const handleSubmit = (e) => {
                 <div className="col-md-12 mt-4">
                   <label className="formlabel">Job Description</label>
                   <div id="jobDescriptionEditor"></div>
-                  {errors.description && <span className="text-danger error-text">{errors.description}</span>}
+                  {errors.description && (
+                    <span className="text-danger error-text">
+                      {errors.description}
+                    </span>
+                  )}
                 </div>
 
                 {/* Job Category Dropdown */}
@@ -580,11 +614,13 @@ const handleSubmit = (e) => {
                                 (type) => type.id === formData.job_category
                               )?.name || ""
                             : ""
-                        }/>
+                        }
+                      />
                       <i>
                         <img
-                          src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"/>
+                          src={`${assetUrl}/front/images/icons/select-drop-arrow.svg`}
+                          alt="Chevron"
+                        />
                       </i>
                     </div>
                     {activeDropdown === "jobCategory" && (
@@ -598,14 +634,17 @@ const handleSubmit = (e) => {
                                 ...formData,
                                 job_category: industryType.id,
                               });
-                            
+
                               setErrors((prevErrors) => ({
                                 ...prevErrors,
-                                job_category: industryType.id ? "" : prevErrors.job_category,
+                                job_category: industryType.id
+                                  ? ""
+                                  : prevErrors.job_category,
                               }));
-                            
+
                               setActiveDropdown(null);
-                            }}>
+                            }}
+                          >
                             <span className="option-text">
                               {industryType.name}
                             </span>
@@ -614,7 +653,9 @@ const handleSubmit = (e) => {
                       </ul>
                     )}
                   </div>
-                  <span className="text-danger error-text">{errors.job_category}</span>
+                  <span className="text-danger error-text">
+                    {errors.job_category}
+                  </span>
                 </div>
 
                 {/* Job Skill Dropdown */}
@@ -629,17 +670,20 @@ const handleSubmit = (e) => {
                   >
                     <div
                       className="select-btn"
-                      onClick={() => handleDropdownClick("jobSkill")}>
+                      onClick={() => handleDropdownClick("jobSkill")}
+                    >
                       <input
                         type="text"
                         className="sBtn-text"
                         placeholder="Job Skill"
                         readOnly
-                        value={formData.skills.join(", ")}/>
+                        value={formData.skills.join(", ")}
+                      />
                       <i>
                         <img
-                          src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"/>
+                          src={`${assetUrl}/front/images/icons/select-drop-arrow.svg`}
+                          alt="Chevron"
+                        />
                       </i>
                     </div>
                     {activeDropdown === "jobSkill" && (
@@ -650,15 +694,25 @@ const handleSubmit = (e) => {
                               key={skill.id}
                               className="option"
                               onClick={() => {
-                                const updatedSkills = formData.skills.includes(skill.name)
-                                  ? formData.skills.filter((name) => name !== skill.name)
+                                const updatedSkills = formData.skills.includes(
+                                  skill.name
+                                )
+                                  ? formData.skills.filter(
+                                      (name) => name !== skill.name
+                                    )
                                   : [...formData.skills, skill.name];
 
-                                setFormData({ ...formData, skills: updatedSkills });
+                                setFormData({
+                                  ...formData,
+                                  skills: updatedSkills,
+                                });
 
                                 setErrors((prevErrors) => ({
                                   ...prevErrors,
-                                  skills: updatedSkills.length > 0 ? "" : prevErrors.skills,
+                                  skills:
+                                    updatedSkills.length > 0
+                                      ? ""
+                                      : prevErrors.skills,
                                 }));
                               }}
                             >
@@ -670,7 +724,9 @@ const handleSubmit = (e) => {
                         )}
                       </ul>
                     )}
-                  <span className="text-danger error-text">{errors.skills}</span>
+                    <span className="text-danger error-text">
+                      {errors.skills}
+                    </span>
                   </div>
 
                   <span
@@ -702,11 +758,13 @@ const handleSubmit = (e) => {
                         id="industryTypeInput"
                         placeholder="Industry Type"
                         readOnly
-                        value={formData.industry_types.join(", ")}/>
+                        value={formData.industry_types.join(", ")}
+                      />
                       <i>
                         <img
-                          src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"/>
+                          src={`${assetUrl}/front/images/icons/select-drop-arrow.svg`}
+                          alt="Chevron"
+                        />
                       </i>
                     </div>
                     <ul className="options py-0">
@@ -717,21 +775,26 @@ const handleSubmit = (e) => {
                               key={industry.id}
                               className="option"
                               onClick={() => {
-                                const updatedIndustries = [...formData.industry_types, industry.name];
-                              
+                                const updatedIndustries = [
+                                  ...formData.industry_types,
+                                  industry.name,
+                                ];
+
                                 setFormData({
                                   ...formData,
                                   industry_types: updatedIndustries,
                                 });
-                              
+
                                 setErrors((prevErrors) => ({
                                   ...prevErrors,
-                                  industry_types: updatedIndustries.length > 0 ? "" : prevErrors.industry_types,
+                                  industry_types:
+                                    updatedIndustries.length > 0
+                                      ? ""
+                                      : prevErrors.industry_types,
                                 }));
-                              
+
                                 setActiveDropdown(null);
                               }}
-                              
                             >
                               {industry.name}
                             </li>
@@ -743,7 +806,9 @@ const handleSubmit = (e) => {
                           )}
                     </ul>
                   </div>
-                  <span className="text-danger error-text">{errors.industry_types}</span>
+                  <span className="text-danger error-text">
+                    {errors.industry_types}
+                  </span>
                 </div>
 
                 {/* Job type  */}
@@ -766,11 +831,13 @@ const handleSubmit = (e) => {
                         id="selectJobType"
                         placeholder="Select Job Type"
                         readOnly
-                        value={formData.job_types.join(", ")}/>
+                        value={formData.job_types.join(", ")}
+                      />
                       <i>
                         <img
-                          src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"/>
+                          src={`${assetUrl}/front/images/icons/select-drop-arrow.svg`}
+                          alt="Chevron"
+                        />
                       </i>
                     </div>
                     {activeDropdown === "jobType" && (
@@ -781,21 +848,26 @@ const handleSubmit = (e) => {
                               key={jobType.id}
                               className="option"
                               onClick={() => {
-                                const updatedJobTypes = [...formData.job_types, jobType.name];
-                              
+                                const updatedJobTypes = [
+                                  ...formData.job_types,
+                                  jobType.name,
+                                ];
+
                                 setFormData({
                                   ...formData,
                                   job_types: updatedJobTypes,
                                 });
-                              
+
                                 setErrors((prevErrors) => ({
                                   ...prevErrors,
-                                  job_types: updatedJobTypes.length > 0 ? "" : prevErrors.job_types,
+                                  job_types:
+                                    updatedJobTypes.length > 0
+                                      ? ""
+                                      : prevErrors.job_types,
                                 }));
-                              
+
                                 setActiveDropdown(null);
                               }}
-                              
                             >
                               {jobType.name}
                             </li>
@@ -806,14 +878,14 @@ const handleSubmit = (e) => {
                       </ul>
                     )}
                   </div>
-                  <span className="text-danger error-text">{errors.job_types}</span>
+                  <span className="text-danger error-text">
+                    {errors.job_types}
+                  </span>
                 </div>
 
                 {/* Workplace Type Dropdown */}
                 <div className="col-md-6 mt-4">
-                  <label className="formlabel">
-                    Workplace Type
-                  </label>
+                  <label className="formlabel">Workplace Type</label>
                   <div
                     className={`select-menu options-main-div ${
                       activeDropdown === "workplaceType" ? "active" : ""
@@ -829,11 +901,13 @@ const handleSubmit = (e) => {
                         id="workPlaceTypeInput"
                         placeholder="Workplace Type"
                         readOnly
-                        value={formData.workplace_types.join(", ")}/>
+                        value={formData.workplace_types.join(", ")}
+                      />
                       <i>
                         <img
-                          src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg"
-                          alt="Chevron"/>
+                          src={`${assetUrl}/front/images/icons/select-drop-arrow.svg`}
+                          alt="Chevron"
+                        />
                       </i>
                     </div>
                     {activeDropdown === "workplaceType" && (
@@ -844,20 +918,26 @@ const handleSubmit = (e) => {
                               key={workplaceType.id}
                               className="option"
                               onClick={() => {
-                                const updatedWorkplaceTypes = [...formData.workplace_types, workplaceType.name];
-                              
+                                const updatedWorkplaceTypes = [
+                                  ...formData.workplace_types,
+                                  workplaceType.name,
+                                ];
+
                                 setFormData({
                                   ...formData,
                                   workplace_types: updatedWorkplaceTypes,
                                 });
-                              
+
                                 setErrors((prevErrors) => ({
                                   ...prevErrors,
-                                  workplace_types: updatedWorkplaceTypes.length > 0 ? "" : prevErrors.workplace_types,
+                                  workplace_types:
+                                    updatedWorkplaceTypes.length > 0
+                                      ? ""
+                                      : prevErrors.workplace_types,
                                 }));
-                              
+
                                 setActiveDropdown(null);
-                              }}                              
+                              }}
                             >
                               {workplaceType.name}
                             </li>
@@ -870,7 +950,9 @@ const handleSubmit = (e) => {
                       </ul>
                     )}
                   </div>
-                  <span className="text-danger error-text">{errors.workplace_types}</span>
+                  <span className="text-danger error-text">
+                    {errors.workplace_types}
+                  </span>
                 </div>
 
                 {/* Experience  */}
@@ -881,38 +963,42 @@ const handleSubmit = (e) => {
                   <div className="row">
                     <div className="col-6">
                       <div className="each-animatted-input-div mt-0">
-                      <input
-                        type="number"
-                        min="0"
-                        step="1"
-                        max="99"
-                        id="experience_min"
-                        name="experience_min"
-                        placeholder="Min"
-                        value={formData.experience_min || ""}
-                        onChange={handleExperienceChange}
-                      />
-                      {errors.experience_min && (
-                        <span className="text-danger error-text">{errors.experience_min}</span>
-                      )}
+                        <input
+                          type="number"
+                          min="0"
+                          step="1"
+                          max="99"
+                          id="experience_min"
+                          name="experience_min"
+                          placeholder="Min"
+                          value={formData.experience_min || ""}
+                          onChange={handleExperienceChange}
+                        />
+                        {errors.experience_min && (
+                          <span className="text-danger error-text">
+                            {errors.experience_min}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="col-6">
                       <div className="each-animatted-input-div mt-0">
-                      <input
-                        type="number"
-                        min="0"
-                        step="1"
-                        max="99"
-                        id="experience_max"
-                        name="experience_max"
-                        placeholder="Max"
-                        value={formData.experience_max || ""}
-                        onChange={handleExperienceChange}
-                      />
-                      {errors.experience_max && (
-                        <span className="text-danger error-text">{errors.experience_max}</span>
-                      )}
+                        <input
+                          type="number"
+                          min="0"
+                          step="1"
+                          max="99"
+                          id="experience_max"
+                          name="experience_max"
+                          placeholder="Max"
+                          value={formData.experience_max || ""}
+                          onChange={handleExperienceChange}
+                        />
+                        {errors.experience_max && (
+                          <span className="text-danger error-text">
+                            {errors.experience_max}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -923,8 +1009,15 @@ const handleSubmit = (e) => {
                   <label htmlFor="selectCurrency" className="formlabel">
                     Salary
                   </label>
-                  <div className={`select-menu options-main-div ${activeDropdown === "salaryCurrency" ? "active" : ""}`}>
-                    <div className="select-btn" onClick={() => handleDropdownClick("salaryCurrency")}>
+                  <div
+                    className={`select-menu options-main-div ${
+                      activeDropdown === "salaryCurrency" ? "active" : ""
+                    }`}
+                  >
+                    <div
+                      className="select-btn"
+                      onClick={() => handleDropdownClick("salaryCurrency")}
+                    >
                       <input
                         type="text"
                         className="sBtn-text"
@@ -934,21 +1027,43 @@ const handleSubmit = (e) => {
                         value={formData.salary_currency || ""}
                       />
                       <i>
-                        <img src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg" alt="Chevron" />
+                        <img
+                          src={`${assetUrl}/front/images/icons/select-drop-arrow.svg`}
+                          alt="Chevron"
+                        />
                       </i>
                     </div>
                     {activeDropdown === "salaryCurrency" && (
                       <ul className="options py-0">
-                        <li className="option" onClick={() => handleCurrencySelect("USD($)")}>USD($)</li>
-                        <li className="option" onClick={() => handleCurrencySelect("INR(₹)")}>INR(₹)</li>
+                        <li
+                          className="option"
+                          onClick={() => handleCurrencySelect("USD($)")}
+                        >
+                          USD($)
+                        </li>
+                        <li
+                          className="option"
+                          onClick={() => handleCurrencySelect("INR(₹)")}
+                        >
+                          INR(₹)
+                        </li>
                       </ul>
                     )}
                   </div>
-                  {errors.salary_currency && <span className="text-danger error-text">{errors.salary_currency}</span>}
+                  {errors.salary_currency && (
+                    <span className="text-danger error-text">
+                      {errors.salary_currency}
+                    </span>
+                  )}
                 </div>
                 {/* Salary Min */}
                 <div className="col-md-4 mt-4">
-                  <label htmlFor="minSalary" className="formlabel d-none d-md-block">&nbsp;</label>
+                  <label
+                    htmlFor="minSalary"
+                    className="formlabel d-none d-md-block"
+                  >
+                    &nbsp;
+                  </label>
                   <div className="each-animatted-input-div mt-0">
                     <input
                       type="number"
@@ -960,12 +1075,21 @@ const handleSubmit = (e) => {
                       value={formData.salary_min || ""}
                       onChange={handleSalaryChange}
                     />
-                    {errors.salary_min && <span className="text-danger error-text">{errors.salary_min}</span>}
+                    {errors.salary_min && (
+                      <span className="text-danger error-text">
+                        {errors.salary_min}
+                      </span>
+                    )}
                   </div>
                 </div>
                 {/* Salary Max */}
                 <div className="col-md-4 mt-4">
-                  <label htmlFor="maxSalary" className="formlabel d-none d-md-block">&nbsp;</label>
+                  <label
+                    htmlFor="maxSalary"
+                    className="formlabel d-none d-md-block"
+                  >
+                    &nbsp;
+                  </label>
                   <div className="each-animatted-input-div mt-0">
                     <input
                       type="number"
@@ -977,15 +1101,23 @@ const handleSubmit = (e) => {
                       value={formData.salary_max || ""}
                       onChange={handleSalaryChange}
                     />
-                    {errors.salary_max && <span className="text-danger error-text">{errors.salary_max}</span>}
+                    {errors.salary_max && (
+                      <span className="text-danger error-text">
+                        {errors.salary_max}
+                      </span>
+                    )}
                   </div>
                 </div>
-                
+
                 {/* Qualifications  */}
                 <div className="col-md-12 mt-4">
                   <label className="formlabel">Qualifications</label>
                   <div id="jobQualificationEditor"></div>
-                  {errors.qualifications && <span className="text-danger error-text">{errors.qualifications}</span>}
+                  {errors.qualifications && (
+                    <span className="text-danger error-text">
+                      {errors.qualifications}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -1006,40 +1138,89 @@ const handleSubmit = (e) => {
                 <div className="col-12">
                   <div className="tab-content" id="myTabContent">
                     {/* Existing Company  */}
-                    <div className={`tab-pane fade ${activeTab === "existing" ? "active show" : ""}`} id="existingCompany">
+                    <div
+                      className={`tab-pane fade ${
+                        activeTab === "existing" ? "active show" : ""
+                      }`}
+                      id="existingCompany"
+                    >
                       <div className="col-md-6 mt-4">
-                          <label htmlFor="existingCompanyInp" className="formlabel">
-                              Company
-                          </label>
-                          <div className={`select-menu options-main-div ${activeDropdown === "existingCompany" ? "active" : ""}`}>
-                              <div className="select-btn" onClick={() => handleDropdownClick("existingCompany")}>
-                                  <input hidden id="existing_company_id" className="input-class" name="company_id" value={selectedCompanyId || ""} />
-                                  <input id="existingCompanyInp" type="text" className="sBtn-text input-class" placeholder="Select existing company" readOnly value={companies.find(company => company.id === selectedCompanyId)?.name || ""} />
-                                  <i><img src="http://ls.bizbybot.com/front/images/icons/select-drop-arrow.svg" alt="Chevron" /></i>
-                              </div>
-                              {activeDropdown === "existingCompany" && (
-                                  <ul className="options py-0">
-                                      {companies.map((company) => (
-                                          <li key={company.id} className="option select-existing-company-dropdown-options" onClick={() => {
-                                            handleCompanySelect(company.id);
-                                          
-                                            setErrors((prevErrors) => ({
-                                              ...prevErrors,
-                                              company: company.id ? "" : prevErrors.company, 
-                                            }));
-                                          
-                                            setActiveDropdown(null);
-                                          }}>
-                                              <span className="option-text">{company.name}</span>
-                                          </li>
-                                      ))}
-                                  </ul>
-                              )}
+                        <label
+                          htmlFor="existingCompanyInp"
+                          className="formlabel"
+                        >
+                          Company
+                        </label>
+                        <div
+                          className={`select-menu options-main-div ${
+                            activeDropdown === "existingCompany" ? "active" : ""
+                          }`}
+                        >
+                          <div
+                            className="select-btn"
+                            onClick={() =>
+                              handleDropdownClick("existingCompany")
+                            }
+                          >
+                            <input
+                              hidden
+                              id="existing_company_id"
+                              className="input-class"
+                              name="company_id"
+                              value={selectedCompanyId || ""}
+                            />
+                            <input
+                              id="existingCompanyInp"
+                              type="text"
+                              className="sBtn-text input-class"
+                              placeholder="Select existing company"
+                              readOnly
+                              value={
+                                companies.find(
+                                  (company) => company.id === selectedCompanyId
+                                )?.name || ""
+                              }
+                            />
+                            <i>
+                              <img
+                                src={`${assetUrl}/front/images/icons/select-drop-arrow.svg`}
+                                alt="Chevron"
+                              />
+                            </i>
                           </div>
-                          <span
-                      className="text-danger error-text"
-                      id="location-error"
-                    >{errors.company}</span>
+                          {activeDropdown === "existingCompany" && (
+                            <ul className="options py-0">
+                              {companies.map((company) => (
+                                <li
+                                  key={company.id}
+                                  className="option select-existing-company-dropdown-options"
+                                  onClick={() => {
+                                    handleCompanySelect(company.id);
+
+                                    setErrors((prevErrors) => ({
+                                      ...prevErrors,
+                                      company: company.id
+                                        ? ""
+                                        : prevErrors.company,
+                                    }));
+
+                                    setActiveDropdown(null);
+                                  }}
+                                >
+                                  <span className="option-text">
+                                    {company.name}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                        <span
+                          className="text-danger error-text"
+                          id="location-error"
+                        >
+                          {errors.company}
+                        </span>
                       </div>
                       {/* <div id="existing-company-div" class="common-description-area-start mt-4">
                                         <p class="long-short-para" id="company-about_company">
@@ -1101,19 +1282,22 @@ const handleSubmit = (e) => {
                                             </div>
                                         </div>
                                 </div> */}
-                        </div>
+                    </div>
                     {/* New Company  */}
                   </div>
                 </div>
               </div>
 
-              <button className="btn submit-application-btn"> UPDATE THE JOB NOW</button>
+              <button className="btn submit-application-btn">
+                {" "}
+                UPDATE THE JOB NOW
+              </button>
             </form>
           </div>
         </div>
-        </section>
-        
-        <UserFooter/>
+      </section>
+
+      <UserFooter />
     </div>
-  )
+  );
 }

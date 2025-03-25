@@ -4,10 +4,10 @@ import { Link } from 'react-router';
 import toast from "react-hot-toast";
 import axios from 'axios';
 
-import Navbar from "../components/navbar";
+import Navbar from "../components/homeNavbar";
 import Footer from '../components/footer';
 import { Nav } from 'react-bootstrap';
-import { apiUrl } from '../helper';
+import { apiUrl } from '../helperURL';
 
 export default function Forgotpasswordpage() {
     const navigate=useNavigate();
