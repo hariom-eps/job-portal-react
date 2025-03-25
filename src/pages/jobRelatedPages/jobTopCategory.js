@@ -12,14 +12,13 @@ import Category from "../../components/jobCategories";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-import { apiUrl } from "../helperURL";
-import { assetUrl } from "../helperASSET";
+import { assetUrl } from "../../helperASSET";
+import { apiUrl } from "../../helperURL";
 
 export default function TopCategory() {
   const { categoryID } = useParams();
   const [categoryData, setCategoryData] = useState(null);
   const userId = JSON.parse(localStorage.getItem("User"))?.id;
-  const [jobs, setJobs] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const token = localStorage.getItem("Token");
@@ -53,8 +52,6 @@ export default function TopCategory() {
           (job) => job.job_category === categoryIDNumber
         );
         console.log("Filtered Jobs (Matching categoryID):", filtered);
-
-        setJobs(allJobs);
         setFilteredJobs(filtered);
       })
       .catch((error) => {

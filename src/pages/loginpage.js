@@ -28,20 +28,20 @@ export default function LoginPage() {
   function handleSubmit(event) {
     event.preventDefault();
     setError(null);
-    let newErrors = {};
+    let error = {};
 
     if (!email.trim()) {
-      newErrors.email = "Email is required.";
+      error.email = "Email is required.";
     } else if (!validateEmail(email)) {
-      newErrors.email = "Invalid email format.";
+      error.email = "Invalid email format.";
     }
 
     if (!password.trim()) {
-      newErrors.password = "Password is required.";
+      error.password = "Password is required.";
     }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (Object.keys(error).length > 0) {
+      setErrors(error);
       return;
     }
 

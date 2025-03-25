@@ -8,12 +8,11 @@ import "summernote/dist/summernote-lite.js";
 import { InputMask } from "@react-input/mask";
 
 import Navbar from "../../components/homeNavbar";
-import Newsletter from "../../components/newsLetterDisplay";
 import UserFooter from "../../components/oneLineFooter";
 import Jobheader from "../../components/jobNavbar";
 
-import { apiUrl } from "../helperURL";
-import { assetUrl } from "../helperASSET";
+import { apiUrl } from "../../helperURL";
+import { assetUrl } from "../../helperASSET";
 
 export default function Updatejob() {
   const { jobID } = useParams();
@@ -35,13 +34,11 @@ export default function Updatejob() {
   const [industryTypes, setIndustryTypes] = useState([]);
   const [jobSkills, setJobSkills] = useState([]);
   const [jobTypes, setJobTypes] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
   const [workplacetypes, setWorkplaceTypes] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const navigate = useNavigate();
   // Company
   const [activeTab, setActiveTab] = useState("existing");
-  const [companyData, setCompanyData] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   // Error
@@ -85,10 +82,6 @@ export default function Updatejob() {
   };
   const handleDropdownClick = (dropdownName) => {
     setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
-  };
-  const handleCountrySelect = (country) => {
-    setSelectedCountry(country);
-    setActiveDropdown(null);
   };
   const handleIndustryTypeSelect = (industry) => {
     setFormData({ ...formData, industry_types: [industry.id] });
@@ -1125,16 +1118,6 @@ export default function Updatejob() {
               <p className="post-pages-heading">Company Information</p>
               <div className="row">
                 <div class="col-12">
-                  {/* <ul class="nav course-tab-ul existing-add-company-ul" id="myTab" role="tablist">
-                      <li class="nav-item" role="presentation">
-                          <button type="button" className={`create-new-existing ${activeTab === "existing" ? "active" : ""}`} id="existing-tab"
-                          onClick={() => setActiveTab("existing")}>Select existing company</button>
-                      </li>
-                      <li class="nav-item" role="presentation">
-                          <button type="button" className={`create-new-existing ${activeTab === "new" ? "active" : ""}`} id="video-tab"
-                          onClick={() => setActiveTab("new")}>Add new company</button>
-                      </li>
-                  </ul> */}
                 </div>
                 <div className="col-12">
                   <div className="tab-content" id="myTabContent">
@@ -1223,68 +1206,7 @@ export default function Updatejob() {
                           {errors.company}
                         </span>
                       </div>
-                      {/* <div id="existing-company-div" class="common-description-area-start mt-4">
-                                        <p class="long-short-para" id="company-about_company">
-                                            </p><p>{}</p>
-                                        <p></p>
-                                        <div class="job-details-list">
-                                            <div class="row">
-                                                <div class="col-4 col-sm-3">
-                                                    <label>Company:</label>
-                                                </div>
-                                                <div class="col-8 col-sm-9">
-                                                    <p id="company-name">toeuoeute</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-4 col-sm-3">
-                                                    <label>Address:</label>
-                                                </div>
-                                                <div class="col-8 col-sm-9">
-                                                    <p id="company-address">
-                                                        sdgsfgdfgdfg, dsgdfg, India, 343434
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-4 col-sm-3">
-                                                    <label>Contact Person:</label>
-                                                </div>
-                                                <div class="col-8 col-sm-9">
-                                                    <p id="company-contact_person">sfgdfgdf
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-4 col-sm-3">
-                                                    <label>Email:</label>
-                                                </div>
-                                                <div class="col-8 col-sm-9">
-                                                    <p id="company-contact_email">gdfgdf@gmail.com
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-4 col-sm-3">
-                                                    <label>Contact:</label>
-                                                </div>
-                                                <div class="col-8 col-sm-9">
-                                                    <p id="company-contact_phone">(345)-(454)-5454
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-4 col-sm-3">
-                                                    <label>Website:</label>
-                                                </div>
-                                                <div class="col-8 col-sm-9">
-                                                    <p id="company-website">grger.com</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div> */}
                     </div>
-                    {/* New Company  */}
                   </div>
                 </div>
               </div>

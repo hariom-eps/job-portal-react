@@ -28,7 +28,6 @@
     const [isActive, setIsActive] = useState(false);
     const [selectedJobType, setSelectedJobType] = useState('');
     const [jobTypes, setJobTypes] = useState([]);
-    const [errorMessage, setErrorMessage] = useState(null); //  error 
     const [appliedJobs,setAppliedJobs]=useState([]);
     const token = localStorage.getItem("Token");
     const userId = JSON.parse(localStorage.getItem("User"))?.id;
@@ -104,11 +103,9 @@
         .then((response) => {
           if (response.data && response.data.data) {
             setJobTypes(response.data.data);
-            setErrorMessage(null);  
           } else {
             console.error("Unexpected response format:", response);
             setJobTypes([]);
-            setErrorMessage("Unexpected response format from job types API.");
             toast.error("Unexpected response format.");
           }
         })
@@ -116,7 +113,6 @@
           console.error("Error fetching job types:", error);
           const message = error.response?.data?.message || error.message || "An error occurred fetching job types.";
           setJobTypes([]);
-          setErrorMessage(message);
           toast.error(message);
         });
     }, []);

@@ -10,7 +10,6 @@ import Footer from '../components/footer';
 import { apiUrl } from '../helperURL';
 
 export default function Forgotpasswordpage() {
-    const navigate=useNavigate();
     const [email,setEmail]=useState('');
 
     const handleSubmit=(e)=>{

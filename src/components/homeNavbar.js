@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Logo from "../images/logo.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../css/style.css";
-import Modal from "react-modal";
 import toast from "react-hot-toast";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";

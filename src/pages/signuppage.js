@@ -18,7 +18,6 @@ export default function Signuppage() {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  // validate inputs
   const validateForm = () => {
     let errors = {};
 
@@ -45,7 +44,7 @@ export default function Signuppage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!validateForm()) return; //ico no val
+    if (!validateForm()) return;
 
     axios
       .post(loginUrl, { first_name: name, email, password })

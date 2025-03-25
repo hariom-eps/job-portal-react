@@ -22,7 +22,6 @@ export default function Postjob() {
   const [countries, setCountries] = useState([]);
   const [jobSkills, setJobSkills] = useState([]);
   const [jobTypes, setJobTypes] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
   const [workplacetypes, setWorkplaceTypes] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const navigate = useNavigate();
@@ -71,10 +70,6 @@ export default function Postjob() {
   };
   const handleDropdownClick = (dropdownName) => {
     setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
-  };
-  const handleCountrySelect = (country) => {
-    setSelectedCountry(country);
-    setActiveDropdown(null);
   };
   const handleIndustryTypeSelect = (industry) => {
     setFormData({ ...formData, industry_types: [industry.id] });
